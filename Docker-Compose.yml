@@ -11,12 +11,13 @@ volumes:
 services:
   php:
     build: 
-      context: ./php
-      dockerfile: Dockerfile
-    image: symfony-study-3/php:latest
+      context: .
+      dockerfile: dockerfile
+    image: symfony-study-3_php:latest
     container_name: php
     volumes: 
-      - ./php/source:/var/www/html
+      - ./config/ini:/usr/local/etc/php
+      - .:/var/www/html
       - php-var:/var/www/html/var       # Для того, чтобы папка не сбрасывалась после запуска конфигурации Docker-Compose
       - php-vendor:/var/www/html/vendor # Для того, чтобы папка не сбрасывалась после запуска конфигурации Docker-Compose
     networks:
@@ -34,4 +35,4 @@ services:
 
 networks:
   network:
-    name: symfony-study-3/network
+    name: symfony-study-3_network

@@ -1,6 +1,7 @@
 FROM php:8.0.9-fpm-buster
 
-COPY ./source /var/www/html
+COPY ./config/ini /usr/local/etc/php
+COPY . /var/www/html
 
 # Необходимо для скачивания расширения при выполнении команды "RUN apt install unzip"
 RUN apt-get update
