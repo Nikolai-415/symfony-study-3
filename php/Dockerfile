@@ -1,4 +1,5 @@
 FROM php:8.0.9-fpm-buster
+
 COPY ./source /var/www/html
 
 # Необходимо для скачивания расширения при выполнении команды "RUN apt install unzip"
@@ -15,8 +16,5 @@ RUN php -r "unlink('composer-setup.php');"
 
 # Проверка и установка пакетов
 RUN composer install
-
-# Изменение прав папки для исправления исключения "Unable to write in ..."
-RUN chmod -R 777 /var/www/html
 
 WORKDIR /var/www/html/public
