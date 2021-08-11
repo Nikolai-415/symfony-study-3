@@ -12,7 +12,7 @@ services:
   php:
     build: 
       context: .
-      dockerfile: dockerfile
+      dockerfile: Dockerfile
     image: symfony-study-3_php:latest
     container_name: php
     volumes: 
