@@ -1,25 +1,25 @@
 version: "3.9"
 
 services:
-	php:
-		build: 
-			context: ./php
-			dockerfile: Dockerfile
-		image: symfony-study-3/php:latest
-		container_name: php
-		networks:
-			- network
+  php:
+    build: 
+      context: ./php
+      dockerfile: Dockerfile
+    image: symfony-study-3/php:latest
+    container_name: php
+    networks:
+      - network
 
-	nginx:
-		image: nginx:1.21.1
-		container_name: nginx
-		volumes: 
-			- ./nginx/nginx.conf:/etc/nginx/nginx.conf
-		ports:
-			- 80:80
-		networks:
-			- network
+  nginx:
+    image: nginx:1.21.1
+    container_name: nginx
+    volumes: 
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+    networks:
+      - network
 
 networks:
-	network:
-		name: symfony-study-3/network
+  network:
+    name: symfony-study-3/network
