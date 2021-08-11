@@ -15,6 +15,6 @@ RUN php composer-setup.php --version=2.1.0 --filename=composer --install-dir=/us
 RUN php -r "unlink('composer-setup.php');"
 
 # Проверка и установка пакетов
-RUN composer install
+RUN composer install && composer dump-autoload
 
 WORKDIR /var/www/html/public

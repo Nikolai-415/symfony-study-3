@@ -1,5 +1,13 @@
 version: "3.9"
 
+volumes:
+  php-var:
+    name:
+      symfony-study-3_volume-php-var
+  php-vendor:
+    name:
+      symfony-study-3_volume-php-vendor
+
 services:
   php:
     build: 
@@ -7,6 +15,10 @@ services:
       dockerfile: Dockerfile
     image: symfony-study-3/php:latest
     container_name: php
+    volumes: 
+      - ./php/source:/var/www/html
+      - php-var:/var/www/html/var       # Для того, чтобы папка не сбрасывалась после запуска конфигурации Docker-Compose
+      - php-vendor:/var/www/html/vendor # Для того, чтобы папка не сбрасывалась после запуска конфигурации Docker-Compose
     networks:
       - network
 
