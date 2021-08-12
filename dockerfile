@@ -1,8 +1,18 @@
 FROM php:8.0.9-fpm-buster
 
-COPY ./config/ini/php.ini /usr/local/etc/php/conf.d/php.ini
+# Корень проекта
+ARG APP_ROOT="/var/www/html"
+COPY . ${APP_ROOT}
 
-COPY . /var/www/html
+# Копируем настройки ini
+COPY ./config/ini /usr/local/etc/php
+
+# Генерация файла "php.ini" на основе значения APP_ENV из файла .env.local.php
+ENV PHP_INI_FILE_NAME="php.ini-development"
+RUN php -r "function getMyArr(){ return include '${APP_ROOT}/.env.local.php'; } copy('${APP_ROOT}/config/ini/'.getMyArr()['PHP_INI_FILE_NAME'], '/usr/local/etc/php/php.ini');"
+
+# Скачивание и включение XDebug
+RUN pecl install xdebug-3.0.4 && docker-php-ext-enable xdebug
 
 # Необходимо для скачивания расширения при выполнении команды "RUN apt install unzip"
 RUN apt-get update
@@ -19,4 +29,4 @@ RUN php -r "unlink('composer-setup.php');"
 # Проверка и установка пакетов
 RUN composer install && composer dump-autoload
 
-WORKDIR /var/www/html/public
+WORKDIR ${APP_ROOT}/public

@@ -1,3 +1,5 @@
+zend_extension=opcache
+
 [PHP]
 
 ;;;;;;;;;;;;;;;;;;;

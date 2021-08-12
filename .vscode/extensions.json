@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "felixfbecker.php-debug",
+        "irongeek.vscode-env",
+        "eamodio.gitlens",
+        "ecmel.vscode-html-css",
+        "ms-azuretools.vscode-docker",
+        "ms-vscode-remote.remote-containers",
+        "redhat.vscode-yaml"
+    ]
+}

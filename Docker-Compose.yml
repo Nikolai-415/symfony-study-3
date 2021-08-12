@@ -3,29 +3,32 @@ version: "3.9"
 volumes:
   php-var:
     name:
-      symfony-study-3_volume-php-var
+      ${APP_NAME}_volume-php-var
   php-vendor:
     name:
-      symfony-study-3_volume-php-vendor
+      ${APP_NAME}_volume-php-vendor
 
 services:
   php:
     build: 
       context: .
       dockerfile: Dockerfile
-    image: symfony-study-3_php:latest
-    container_name: php
+      args:
+        - "APP_ROOT=${APP_ROOT}"
+    image: ${APP_NAME}_image-php:latest
+    container_name: ${APP_NAME}_container-php
     volumes: 
-      - ./config/ini:/usr/local/etc/php
-      - .:/var/www/html
-      - php-var:/var/www/html/var       # Для того, чтобы папка не сбрасывалась после запуска конфигурации Docker-Compose
-      - php-vendor:/var/www/html/vendor # Для того, чтобы папка не сбрасывалась после запуска конфигурации Docker-Compose
+      - .:${APP_ROOT}
+      - php-var:${APP_ROOT}/var             # Для того, чтобы папка не сбрасывалась после запуска конфигурации Docker-Compose
+      - php-vendor:${APP_ROOT}/vendor       # Для того, чтобы папка не сбрасывалась после запуска конфигурации Docker-Compose
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - network
 
   nginx:
     image: nginx:1.21.1
-    container_name: nginx
+    container_name: ${APP_NAME}_container-nginx
     volumes: 
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     ports:
@@ -35,4 +38,4 @@ services:
 
 networks:
   network:
-    name: symfony-study-3_network
+    name: ${APP_NAME}_network
