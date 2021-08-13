@@ -25,6 +25,8 @@
 <ol>
   <li>Склонировать репозиторий;</li>
   <li>Запустить терминал в корне проекта;</li>
+  <li>Установить все пакеты Composer'а командой:<br/>
+  <code>composer install && composer dump-autoload</code></li>
   <li>Сгенерировать файл env-переменных окружения командой:<br/>
   <code>composer dump-env dev</code> для development<br/>
   <code>composer dump-env prod</code> для production</li>
@@ -81,7 +83,7 @@
   <code>docker-compose down</code></li>
   <li>Удалить старый образ PHP командой:<br/>
   <code>docker rmi symfony-study-3_image-php</code></li>
-  <li>Выполнить пункты 3-4 из <a href="#установка-при-наличии-composerа">установки (при наличии Composer'а)</a>.</li>
+  <li>Выполнить пункты 4-5 из <a href="#установка-при-наличии-composerа">установки (при наличии Composer'а)</a>.</li>
 </ol>
 
 <h2>Смена окружения (при отсутствии Composer'а)</h2>
