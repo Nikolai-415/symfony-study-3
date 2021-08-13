@@ -25,8 +25,6 @@
 <ol>
   <li>Склонировать репозиторий;</li>
   <li>Запустить терминал в корне проекта;</li>
-  <li>Установить все пакеты Composer'а командой:<br/>
-  <code>composer install && composer dump-autoload</code></li>
   <li>Сгенерировать файл env-переменных окружения командой:<br/>
   <code>composer dump-env dev</code> для development<br/>
   <code>composer dump-env prod</code> для production</li>
@@ -55,7 +53,7 @@
   <code>docker-compose down</code></li>
   <li>Удалить старый образ PHP командой:<br/>
   <code>docker rmi symfony-study-3_image-php</code></li>
-  <li>Собрать заново конфигурацию Docker-Compose командой:<br/>
+  <li>Собрать конфигурацию Docker-Compose командой:<br/>
   <code>docker-compose build</code></li>
 </ol>
 
@@ -66,7 +64,7 @@
   <code>docker-compose up -d</code><br/>
   Дождаться запуска всех контейнеров;</li>
   <li>Система будет доступна по адресу:<br/>
-  http://localhost:80/</li>
+  <a href="http://localhost:80/" target="_blank">http://localhost:80/</a></li>
 </ol>
 
 <h2>Остановка</h2>
@@ -83,7 +81,7 @@
   <code>docker-compose down</code></li>
   <li>Удалить старый образ PHP командой:<br/>
   <code>docker rmi symfony-study-3_image-php</code></li>
-  <li>Выполнить пункты 4-5 из <a href="#установка-при-наличии-composerа">установки (при наличии Composer'а)</a>.</li>
+  <li>Выполнить пункты 3-4 из <a href="#установка-при-наличии-composerа">установки (при наличии Composer'а)</a>.</li>
 </ol>
 
 <h2>Смена окружения (при отсутствии Composer'а)</h2>
@@ -92,7 +90,7 @@
   <li>(Если конфигурация Docker-Compose остановлена) Запустить образ PHP в конфигурации Docker-Compose командой:<br/>
   <code>docker-compose up -d php</code><br/>
   Дождаться запуска контейнера;</li>
-  <li>Выполнить пункты 4-11 из <a href="#установка-при-отсутствии-composerа">установки (при отсутствии Composer'а)</a>.</li>
+  <li>Выполнить пункты 4-10 из <a href="#установка-при-отсутствии-composerа">установки (при отсутствии Composer'а)</a>.</li>
 </ol>
 
 <h2>Удаление</h2>
