@@ -1,8 +1,8 @@
 .git/
 .gitignore
 
-.dockerignore
 Docker-Compose.yml
-Dockerfile
 
 nginx/
+postgres/
+shells/

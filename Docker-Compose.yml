@@ -24,7 +24,7 @@ services:
     container_name: ${APP_NAME}_container_php
     extra_hosts:
       - host.docker.internal:host-gateway
-    image: ${APP_NAME}_image_php:latest
+    image: ${APP_NAME}_image_php:8.0.9-fpm-buster
     networks:
       - network
     volumes:
@@ -45,18 +45,25 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
 
   postgres:
+    build:
+      args:
+        - APP_ROOT=${APP_ROOT}
+      context: ./postgres
+      dockerfile: Dockerfile
     container_name: ${APP_NAME}_container_postgres
     environment:
       - POSTGRES_HOST=${DBMS_HOST}
-      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_PORT=${DBMS_PORT}
       - POSTGRES_USER=${DBMS_USER_NAME}
       - POSTGRES_PASSWORD=${DBMS_USER_PASSWORD}
-    image: postgres:13.4-buster
+      - POSTGRES_DB=${DBMS_DB_NAME}
+    image: ${APP_NAME}_image_postgres:13.4-buster
     networks:
       - network
     ports:
       - ${DBMS_PORT}:5432
     volumes:
+      - ./postgres/sql-scripts:/var/lib/postgresql/sql-scripts
       - postgres-data:/var/lib/postgresql/data
 
   pgadmin:

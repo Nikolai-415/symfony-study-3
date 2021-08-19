@@ -107,7 +107,7 @@
   <code>volume rm symfony-study-3_volume_pgadmin-data</code></li>
   <li>Удалить сгенерированный образ для контейнера PHP:<br/>
   <code>docker rmi symfony-study-3_image_php</code></li>
-  <li>Конфигурация проекта также использует образы: <i><b>nginx:1.21.1</b></i>, <i><b>postgres:13.4-buster</b></i> и <i><b>dpage/pgadmin4:5.6</b></i>. Если они больше нигде не используются, то и их удалить командой:<br/>
+  <li>Конфигурация проекта также использует образы: <i><b>nginx:1.21.1</b></i>, <i><b>postgres:13.4-buster</b></i> и <i><b>dpage/pgadmin4:5.6</b></i>. Если они больше нигде не используются, то и их удалить соответствующими командами:<br/>
   <code>docker rmi nginx:1.21.1</code><br/>
   <code>docker rmi postgres:13.4-buster</code><br/>
   <code>docker rmi dpage/pgadmin4:5.6</code></li>
