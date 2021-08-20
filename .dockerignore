@@ -2,7 +2,7 @@
 .gitignore
 
 Docker-Compose.yml
+commands.sh
 
 nginx/
 postgres/
-shells/
