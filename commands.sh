@@ -34,13 +34,6 @@ function n415_execute_command()
         echo "| clear php                   | Очистить PHP"
         echo "| clear postgres              | Очистить PostgreSQL"
         echo "| clear project               | Очистить весь проект"
-        echo "| migrations current          | Текущая миграция"
-        echo "| migrations latest           | Последняя доступная миграция"
-        echo "| migrations check            | Выполнены ли все миграции"
-        echo "| migrations make entities    | Создать миграцию на основе классов моделей"
-        echo "| migrations make db          | Создать миграцию на основе текущей БД"
-        echo "| migrations up [version]     | Запустить миграцию с указанной версией"
-        echo "| migrations down [version]   | Откатить миграцию с указанной версией"
         echo "==========================================================================="
         return 0
     elif [ "$command" = "build" ]; then
@@ -116,50 +109,6 @@ function n415_execute_command()
             fi
         else
             echo "Неверный аргумент 1! Допустимые значения: \"tables\"."
-        fi
-    elif [ "$command" = "migrations" ]; then
-        if [ "$1" = "current" ]; then
-            echo "Текущая миграция:"
-            docker exec symfony-study-3_container_php sh -c "cd .. && php bin/console doctrine:migrations:current"
-            return 0
-        elif [ "$1" = "latest" ]; then
-            echo "Последняя доступная миграция:"
-            docker exec symfony-study-3_container_php sh -c "cd .. && php bin/console doctrine:migrations:latest"
-            return 0
-        elif [ "$1" = "check" ]; then
-            echo "Выполнены ли все миграции:"
-            docker exec symfony-study-3_container_php sh -c "cd .. && php bin/console doctrine:migrations:up-to-date"
-            return 0
-        elif [ "$1" = "make" ]; then
-            if [ "$2" = "entities" ]; then
-                echo "Создание миграции на основе классов сущностей..."
-                docker exec symfony-study-3_container_php sh -c "cd .. && php bin/console make:migration"
-                return 0
-            elif [ "$2" = "db" ]; then
-                echo "Создание миграции на основе текущей БД..."
-                docker exec symfony-study-3_container_php sh -c "cd .. && php bin/console doctrine:migrations:dump-schema"
-                return 0
-            else
-                echo "Неверный аргумент 2! Допустимые значения: \"entities\", \"db\"."
-            fi
-        elif [ "$1" = "up" ]; then
-            if [ "$2" = "" ]; then
-                echo "Неверный аргумент 2! Необходимо указать версию файла миграции."
-            else
-                echo "Запуск миграции \"$2\"..."
-                docker exec symfony-study-3_container_php sh -c "cd .. && php bin/console doctrine:migrations:execute 'DoctrineMigrations\\Version$2' --up"
-                return 0
-            fi
-        elif [ "$1" = "down" ]; then
-            if [ "$2" = "" ]; then
-                echo "Неверный аргумент 2! Необходимо указать версию файла миграции."
-            else
-                echo "Запуск миграции \"$2\"..."
-                docker exec symfony-study-3_container_php sh -c "cd .. && php bin/console doctrine:migrations:execute 'DoctrineMigrations\\Version$2' --down"
-                return 0
-            fi
-        else
-            echo "Неверный аргумент 1! Допустимые значения: \"current\", \"latest\", \"check\", \"make\", \"up\", \"down\"."
         fi
     else
         echo "Неизвестная команда!"
