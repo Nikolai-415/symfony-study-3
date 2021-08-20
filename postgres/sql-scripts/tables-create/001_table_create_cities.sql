@@ -5,3 +5,4 @@ CREATE TABLE cities
 	CONSTRAINT  pkey_cities_id	PRIMARY KEY(id)
 );
 INSERT INTO cities(id, name) VALUES (0, 'Любой');
+ALTER TABLE cities ALTER COLUMN id RESTART SET START 1;

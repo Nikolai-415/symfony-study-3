@@ -8,3 +8,4 @@ CREATE TABLE vacancies
     CONSTRAINT fkey_vacancies_to_vacancies      FOREIGN KEY(parent)     REFERENCES vacancies(id)
 );
 INSERT INTO vacancies(id, name, parent) VALUES (0, 'Любая', NULL);
+ALTER TABLE vacancies ALTER COLUMN id RESTART SET START 1;
