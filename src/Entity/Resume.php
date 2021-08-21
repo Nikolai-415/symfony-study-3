@@ -46,7 +46,7 @@ class Resume
     /**
      * @ORM\Column(type="datetime")
      */
-    private $sendingDateTime;
+    private $sendingDatetime;
 
     /**
      * @ORM\ManyToOne(targetEntity=City::class, inversedBy="resumes")
@@ -135,14 +135,14 @@ class Resume
         return $this;
     }
 
-    public function getSendingDateTime(): ?\DateTimeInterface
+    public function getsendingDatetime(): ?\DateTimeInterface
     {
-        return $this->sendingDateTime;
+        return $this->sendingDatetime;
     }
 
-    public function setSendingDateTime(\DateTimeInterface $sendingDateTime): self
+    public function setsendingDatetime(\DateTimeInterface $sendingDatetime): self
     {
-        $this->sendingDateTime = $sendingDateTime;
+        $this->sendingDatetime = $sendingDatetime;
 
         return $this;
     }

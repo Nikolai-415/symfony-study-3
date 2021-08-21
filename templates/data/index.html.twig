@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Заголовок страницы{% endblock %}
+
+{% block header %}Заголовок страницы{% endblock %}
+
+{% block content %}
+    {% if errors_texts %}
+        При попытке загрузки данных возникли следующие ошибки:
+        {% for error_text in errors_texts %}
+            <li>{{ error_text }};</li>
+        {% endfor %}
+    {% else %}
+
+        <hr/>
+
+        Cities ({{ cities|length }}):<br/>
+        {% if cities|length != 0 %}
+            {% for city in cities %}
+                <li>
+                    {{ city.id }} | 
+                    {{ city.name }}
+                </li>
+            {% endfor %}
+        {% else %}
+            Нет городов!
+        {% endif %}
+
+        <hr/>
+
+        Vacancies ({{ vacancies|length }}):<br/>
+        {% if vacancies|length != 0 %}
+            {% for vacancy in vacancies %}
+                <li>
+                    {{ vacancy.id }} | 
+                    {{ vacancy.name }} | 
+                    {% if vacancy.parent %}
+                        {{ vacancy.parent.name }}
+                    {% else %}
+                        Нет
+                    {% endif %}
+                </li>
+            {% endfor %}
+        {% else %}
+            Нет вакансий!
+        {% endif %}
+
+        <hr/>
+
+        Resumes ({{ resumes|length }}):<br/>
+        {% if resumes|length != 0 %}
+            {% for resume in resumes %}
+                <li>
+                    {{ resume.id }} | 
+                    {{ resume.full_name }}
+                </li>
+            {% endfor %}
+        {% else %}
+            Нет резюме!
+        {% endif %}
+
+        <hr/>
+        
+    {% endif %}
+{% endblock %}
