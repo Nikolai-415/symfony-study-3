@@ -21,6 +21,12 @@
             </div>
             <div class="menu">
                 <a href="{{ path('index') }}">Главная</a>
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %} {# Если пользователь авторизован #}
+                    <a href="{{ path('app_logout') }}">Выйти</a>
+                {% else %}
+                    <a href="{{ path('app_login') }}">Авторизация</a>
+                    <a href="{{ path('app_register') }}">Регистрация</a>
+                {% endif %}
             </div>
         </header>
         <main>

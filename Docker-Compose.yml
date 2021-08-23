@@ -20,7 +20,7 @@ services:
       args:
         - APP_ROOT=${APP_ROOT}
       context: .
-      dockerfile: Dockerfile
+      dockerfile: dockerfile
     container_name: ${APP_NAME}_container_php
     extra_hosts:
       - host.docker.internal:host-gateway
@@ -50,7 +50,7 @@ services:
       args:
         - APP_ROOT=${APP_ROOT}
       context: ./postgres
-      dockerfile: Dockerfile
+      dockerfile: dockerfile
     container_name: ${APP_NAME}_container_postgres
     environment:
       - POSTGRES_HOST=${DBMS_HOST}

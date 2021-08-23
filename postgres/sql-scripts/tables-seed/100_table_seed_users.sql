@@ -1,1 +1,0 @@
-INSERT INTO users(login, password_sha512) VALUES ('admin', ENCODE(SHA512('password'), 'hex'));

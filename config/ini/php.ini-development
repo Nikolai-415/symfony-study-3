@@ -1,4 +1,3 @@
-zend_extension=opcache
 zend_extension=xdebug
 
 [PHP]
@@ -928,7 +927,7 @@ default_socket_timeout = 60
 ;extension=gd
 ;extension=gettext
 ;extension=gmp
-;extension=intl
+extension=intl
 ;extension=imap
 ;extension=ldap
 ;extension=mbstring
@@ -958,7 +957,7 @@ default_socket_timeout = 60
 ;extension=tidy
 ;extension=xsl
 
-;zend_extension=opcache
+zend_extension=opcache
 
 ;;;;;;;;;;;;;;;;;;;
 ; Module Settings ;

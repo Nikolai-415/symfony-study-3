@@ -1,7 +1,7 @@
 .git/
 .gitignore
 
-Docker-Compose.yml
+docker-compose.yml
 commands.sh
 
 nginx/
