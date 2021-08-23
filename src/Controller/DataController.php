@@ -20,6 +20,7 @@ class DataController extends AbstractController
             curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, true);
             $data = curl_exec($curlHandle);
             $response = curl_getinfo($curlHandle, CURLINFO_RESPONSE_CODE);
+            curl_close($curlHandle);
 
             if ($response == 200) // Если всё в порядке
             {
@@ -45,7 +46,7 @@ class DataController extends AbstractController
 
     #[Route('/', name: 'index')]
     public function index(): Response
-    {
+    {        
         $cities_data = $this->getJsonFromApi("api/cities_list", $errors_texts);
         $vacancies_data = $this->getJsonFromApi("api/vacancies_list", $errors_texts);
         $resumes_data = $this->getJsonFromApi("api/data_list", $errors_texts);

@@ -2,10 +2,11 @@ FROM php:8.0.9-fpm-buster
 
 # Корень проекта
 ARG APP_ROOT="/var/www/html"
+WORKDIR ${APP_ROOT}
 COPY . ${APP_ROOT}
 
 # Исправление исключений "Unable to create..." / "Unable to write..." и т.п.
-RUN chmod -R 777 /var/www/html
+RUN chmod -R 777 ${APP_ROOT}
 
 # Копируем настройки ini
 COPY ./config/ini /usr/local/etc/php
