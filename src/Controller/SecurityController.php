@@ -54,6 +54,8 @@ class SecurityController extends AbstractController
                 )
             );
 
+            $user->setToken($user->getUserIdentifier().":".$user->getPassword());
+
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();

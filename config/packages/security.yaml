@@ -9,6 +9,10 @@ security:
 
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
+        api_user_provider:
+            entity:
+                class: App\Entity\User
+                property: token
         # used to reload user from session & other features (e.g. switch_user)
         app_user_provider:
             entity:
@@ -18,10 +22,16 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        api:
+            pattern: ^/api/
+            provider: api_user_provider
+            custom_authenticator:
+                - App\Security\TokenAuthenticator
         main:
             lazy: true
             provider: app_user_provider
-            custom_authenticator: App\Security\UserAuthenticator
+            custom_authenticator:
+                - App\Security\UserAuthenticator
             logout:
                 path: app_logout
                 # where to redirect after logout
@@ -36,5 +46,9 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        # allow unauthenticated users to access the login form
+        #- { path: ^/api/cities_list, roles: PUBLIC_ACCESS }
+        - { path: ^/api, roles: ROLE_ADMIN }
+
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }

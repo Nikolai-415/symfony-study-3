@@ -52,8 +52,8 @@ class ApiController extends AbstractController
         return new JsonResponse($json, 200, [], true);
     }
 
-    #[Route('/api/data_list', name: 'api_data_list')]
-    public function data_list(ResumeRepository $resumeRepository): JsonResponse
+    #[Route('/api/resumes_list', name: 'api_resumes_list')]
+    public function resumes_list(ResumeRepository $resumeRepository): JsonResponse
     {
         $resumes = $resumeRepository->findAll();
 

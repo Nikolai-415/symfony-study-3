@@ -5,14 +5,15 @@
 {% block header %}Заголовок страницы{% endblock %}
 
 {% block content %}
-    {% if errors_texts %}
-    
-        При попытке загрузки данных возникли следующие ошибки:
-        {% for error_text in errors_texts %}
-            <li>{{ error_text }};</li>
-        {% endfor %}
+    {% if is_granted('ROLE_ADMIN') %}
+        {% if errors_texts %}
+        
+            При попытке загрузки данных возникли следующие ошибки:
+            {% for error_text in errors_texts %}
+                <li>{{ error_text }};</li>
+            {% endfor %}
 
-    {% else %}
+        {% endif %}
 
         <table class="table_data">
             <tr>
@@ -61,11 +62,10 @@
                 {% endfor %}
             {% else %}
                 <tr>
-                    <td colspan="2">Нет вакансий!</td>
+                    <td colspan="3">Нет вакансий!</td>
                 </tr>
             {% endif %}
         </table>
-
         
         <table class="table_data">
             <tr>
@@ -86,6 +86,7 @@
                 </tr>
             {% endif %}
         </table>
-
+    {% else %}
+        Добро пожаловать!
     {% endif %}
 {% endblock %}

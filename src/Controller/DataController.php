@@ -17,6 +17,17 @@ class DataController extends AbstractController
         $curlHandle = curl_init($uri);
         if($curlHandle != false)
         {
+            /**
+             * @var \App\Entity\User
+             */
+            $user = $this->getUser();
+            if($user != null)
+            {
+                $username = $user->getUserIdentifier();
+                $password = $user->getPassword();
+                curl_setopt($curlHandle, CURLOPT_HTTPHEADER, array("X-AUTH-TOKEN: $username:$password"));
+            }
+
             curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, true);
             $data = curl_exec($curlHandle);
             $response = curl_getinfo($curlHandle, CURLINFO_RESPONSE_CODE);
@@ -49,19 +60,22 @@ class DataController extends AbstractController
     {        
         $cities_data = $this->getJsonFromApi("api/cities_list", $errors_texts);
         $vacancies_data = $this->getJsonFromApi("api/vacancies_list", $errors_texts);
-        $resumes_data = $this->getJsonFromApi("api/data_list", $errors_texts);
+        $resumes_data = $this->getJsonFromApi("api/resumes_list", $errors_texts);
 
-        $cities = $cities_data->data;
+        $cities = $cities_data?->data;
         $vacancies = array();
-        foreach($vacancies_data->data as $vacancy_data)
+        if($vacancies_data != null)
         {
-            $vacancies[$vacancy_data->id] = [
-                'id' => $vacancy_data->id,
-                'name' => $vacancy_data->name,
-                'parent' => $vacancy_data->parent_id == null ? null : $vacancies[$vacancy_data->parent_id]
-            ];
+            foreach($vacancies_data->data as $vacancy_data)
+            {
+                $vacancies[$vacancy_data->id] = [
+                    'id' => $vacancy_data->id,
+                    'name' => $vacancy_data->name,
+                    'parent' => $vacancy_data->parent_id == null ? null : $vacancies[$vacancy_data->parent_id]
+                ];
+            }
         }
-        $resumes = $resumes_data->data;
+        $resumes = $resumes_data?->data;
 
         return $this->render('data/index.html.twig', [
             'errors_texts' => $errors_texts,
