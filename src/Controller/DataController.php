@@ -61,8 +61,7 @@ class DataController extends AbstractController
         }
     }
 
-    #[Route('/', name: 'index')]
-    public function index(): Response
+    public function data_list(): Response
     {        
         // Работаю не напрямую с БД, а с созданным API просто для того, чтобы показать, как, к примеру, я бы обрабатывал API извне (классы моделей тоже бы использовал)
 
@@ -136,12 +135,31 @@ class DataController extends AbstractController
             }
         }
 
-        return $this->render('data/index.html.twig', [
+        return $this->render('data/data_list.html.twig', [
             'errors_texts' => $errors_texts,
             'cities' => $cities,
             'vacancies' => $vacancies,
-            'resumes' => $resumes,
-            'controller_name' => 'DataController',
+            'resumes' => $resumes
+        ]);
+    }
+
+    public function edit_data($id = null) : Response
+    {
+        $is_edit = true;
+        if($id == null) // если ID не указан - идёт добавление новой записи
+        {
+            $is_edit = false;
+            $this->denyAccessUnlessGranted('ROLE_ADD');
+        }
+        return $this->render('data/edit_data.html.twig', [
+            'is_edit' => $is_edit
+        ]);
+    }
+
+    public function delete_data($id) : Response
+    {
+        return $this->render('data/delete_data.html.twig', [
+
         ]);
     }
 }

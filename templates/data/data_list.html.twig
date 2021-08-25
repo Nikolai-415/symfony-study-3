@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Просмотр записей{% endblock %}
+
+{% block header %}Просмотр записей{% endblock %}
+
+{% block content %}
+    {% if is_granted('ROLE_ADD') %}
+        <a href="{{ path('edit_data') }}">Добавить</a>
+    {% endif %}
+
+    <table class="table_data">
+        <tr>
+            <th colspan="11">Resumes ({{ resumes|length }})</th>
+        </tr>
+        <tr>
+            <th>ID</th>
+            <th>ФИО</th>
+            <th>Обо мне</th>
+            <th>Опыт работы</th>
+            <th>Желаемая заработная плата</th>
+            <th>Дата рождения</th>
+            <th>Дата отправки резюме</th>
+            <th>Выбранный город трудоустройства</th>
+            <th>Выбранная вакансия</th>
+            <th>Аватар</th>
+            <th>Файл резюме</th>
+            <th colspan="2">Действия</th>
+        </tr>
+        {% if resumes|length != 0 %}
+            {% for resume in resumes %}
+                <tr>
+                    <td>{{ resume.id }}</td>
+                    <td>{{ resume.getFullName() }}</td>
+                    <td>{{ resume.getAbout() ?? 'Нет информации' }}</td>
+                    <td>{{ resume.getWorkExperience() }}</td>
+                    <td>{{ resume.getDesiredSalary() }}</td>
+                    <td>{{ resume.getBirthDate().format('d.m.Y') }}</td>
+                    <td>{{ resume.getSendingDatetime().format('d.m.Y H:i:s') }}</td>
+                    <td>{{ resume.getCityToWorkIn().getName() }}</td>
+                    <td>{{ resume.getDesiredVacancy().getName() }}</td>
+                    <td>{{ resume.getAvatar() }}</td>
+                    <td>{{ resume.getFile() }}</td>
+                    <td>
+                        {% if is_granted('ROLE_EDIT') %}
+                            <a href="{{ path('edit_data', { id: resume.id }) }}">Изменить</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if is_granted('ROLE_DELETE') %}
+                            <a href="{{ path('delete_data', { id: resume.id }) }}">Удалить</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="11">Нет резюме!</td>
+            </tr>
+        {% endif %}
+    </table>
+{% endblock %}

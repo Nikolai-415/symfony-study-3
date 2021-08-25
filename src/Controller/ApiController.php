@@ -11,8 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ApiController extends AbstractController
 {
-    #[Route('/api/data_list', name: 'api_data_list')]
-    public function resumes_list(CityRepository $cityRepository, VacancyRepository $vacancyRepository, ResumeRepository $resumeRepository): JsonResponse
+    public function data_list(CityRepository $cityRepository, VacancyRepository $vacancyRepository, ResumeRepository $resumeRepository): JsonResponse
     {
         $data = array();
 

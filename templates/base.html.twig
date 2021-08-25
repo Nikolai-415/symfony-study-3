@@ -33,6 +33,14 @@
             <h1>
                 {% block header %}Заголовок по умолчанию{% endblock %}
             </h1>
+            {% if errors_texts ?? false %}
+            
+                При попытке загрузки данных возникли следующие ошибки:
+                {% for error_text in errors_texts %}
+                    <li>{{ error_text }};</li>
+                {% endfor %}
+
+            {% endif %}
             {% block content %}
                 Содержание страницы по умолчанию
             {% endblock %}

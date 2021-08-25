@@ -1,3 +1,66 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+# ===================================================================
+# Основное
+# ===================================================================
+index:
+    path: /
+    controller: App\Controller\MainController::index
+
+app_login:
+    path: /login
+    controller: App\Controller\SecurityController::login
+
+app_register:
+    path: /register
+    controller: App\Controller\SecurityController::register
+
+app_logout:
+    path: /logout
+    controller: App\Controller\SecurityController::logout
+    methods: GET
+# ===================================================================
+
+# ===================================================================
+# API - работа с записями
+# ===================================================================
+api_data_list:
+    path: /api/data_list
+    controller: App\Controller\ApiController::data_list
+
+api_get_data:
+    path: /api/get_data/{id}
+    controller: App\Controller\ApiController::get_data
+    requirements:
+        id: '\d+'
+
+api_edit_data:
+    path: /api/edit_data/{id}
+    controller: App\Controller\ApiController::edit_data
+    requirements:
+        id: '\d+'
+
+api_delete_data:
+    path: /api/delete_data/{id}
+    controller: App\Controller\ApiController::delete_data
+    requirements:
+        id: '\d+'
+# ===================================================================
+
+# ===================================================================
+# Client - работа с записями
+# ===================================================================
+data_list:
+    path: /data_list
+    controller: App\Controller\DataController::data_list
+
+edit_data:
+    path: /edit_data/{id?}
+    controller: App\Controller\DataController::edit_data
+    requirements:
+        id: '\d+'
+
+delete_data:
+    path: /delete_data/{id}
+    controller: App\Controller\DataController::delete_data
+    requirements:
+        id: '\d+'
+# ===================================================================

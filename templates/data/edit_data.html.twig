@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {% if is_edit %}
+        Изменение записи
+    {% else %}
+        Добавление записи
+    {% endif %}
+{% endblock %}
+
+{% block header %}
+    {% if is_edit %}
+        Изменение записи
+    {% else %}
+        Добавление записи
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <a href="{{ path('data_list') }}">Назад</a>
+{% endblock %}
