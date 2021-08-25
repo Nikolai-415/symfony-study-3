@@ -66,69 +66,73 @@ class DataController extends AbstractController
     {        
         // Работаю не напрямую с БД, а с созданным API просто для того, чтобы показать, как, к примеру, я бы обрабатывал API извне (классы моделей тоже бы использовал)
 
-        $cities_data = $this->getJsonFromApi("api/cities_list", $errors_texts);
-        $vacancies_data = $this->getJsonFromApi("api/vacancies_list", $errors_texts);
-        $resumes_data = $this->getJsonFromApi("api/resumes_list", $errors_texts);
+        $data_list = $this->getJsonFromApi("api/data_list", $errors_texts);
 
         /**
          * @var City[]
          */
         $cities = array();
-        if($cities_data != null)
-        {
-            foreach($cities_data->data as $city_data)
-            {
-                $city = new City(
-                    $city_data->id,
-                    $city_data->name
-                );
-                $cities[$city_data->id] = $city;
-            }
-        }
 
         /**
          * @var Vacancy[]
          */
         $vacancies = array();
-        if($vacancies_data != null)
-        {
-            foreach($vacancies_data->data as $vacancy_data)
-            {
-                $vacancy = new Vacancy(
-                    $vacancy_data->id,
-                    $vacancy_data->name,
-                    $vacancy_data->parent_id == null ? null : $vacancies[$vacancy_data->parent_id]
-                );
-                $vacancies[$vacancy_data->id] = $vacancy;
-            }
-        }
-        
+
         /**
          * @var Resume[]
          */
         $resumes = array();
-        if($resumes_data != null)
+
+        if($data_list != null)
         {
-            foreach($resumes_data->data as $resume_data)
+            //if($data_list != null)
             {
-                $resume_city = $cities[$resume_data->city_to_work_in_id];
-                $resume_vacancy = $vacancies[$resume_data->desired_vacancy_id];
-                $resume = new Resume (
-                    $resume_data->id,
-                    $resume_data->full_name,
-                    $resume_data->about,
-                    $resume_data->work_experience,
-                    $resume_data->desired_salary,
-                    new DateTime($resume_data->birth_date->date, new DateTimeZone($resume_data->birth_date->timezone)), 
-                    new DateTime($resume_data->sending_datetime->date, new DateTimeZone($resume_data->sending_datetime->timezone)), 
-                    $resume_city,
-                    $resume_vacancy,
-                    $resume_data->avatar,
-                    $resume_data->file
-                );
-                $resume_city->addResume($resume);
-                $resume_vacancy->addResume($resume);
-                $resumes[$resume_data->id] = $resume;
+                foreach($data_list->data->cities as $city_data)
+                {
+                    $city = new City(
+                        $city_data->id,
+                        $city_data->name
+                    );
+                    $cities[$city_data->id] = $city;
+                }
+            }
+    
+            //if($vacancies_data != null)
+            {
+                foreach($data_list->data->vacancies as $vacancy_data)
+                {
+                    $vacancy = new Vacancy(
+                        $vacancy_data->id,
+                        $vacancy_data->name,
+                        $vacancy_data->parent_id == null ? null : $vacancies[$vacancy_data->parent_id]
+                    );
+                    $vacancies[$vacancy_data->id] = $vacancy;
+                }
+            }
+            
+            //if($resumes_data != null)
+            {
+                foreach($data_list->data->resumes as $resume_data)
+                {
+                    $resume_city = $cities[$resume_data->city_to_work_in_id];
+                    $resume_vacancy = $vacancies[$resume_data->desired_vacancy_id];
+                    $resume = new Resume (
+                        $resume_data->id,
+                        $resume_data->full_name,
+                        $resume_data->about,
+                        $resume_data->work_experience,
+                        $resume_data->desired_salary,
+                        new DateTime($resume_data->birth_date->date, new DateTimeZone($resume_data->birth_date->timezone)), 
+                        new DateTime($resume_data->sending_datetime->date, new DateTimeZone($resume_data->sending_datetime->timezone)), 
+                        $resume_city,
+                        $resume_vacancy,
+                        $resume_data->avatar,
+                        $resume_data->file
+                    );
+                    $resume_city->addResume($resume);
+                    $resume_vacancy->addResume($resume);
+                    $resumes[$resume_data->id] = $resume;
+                }
             }
         }
 
