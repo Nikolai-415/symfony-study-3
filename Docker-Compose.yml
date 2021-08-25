@@ -1,58 +1,83 @@
-version: "3.9"
-
+version: '3.9'
 
 volumes:
   php-var:
-    name:
-      ${APP_NAME}_volume-php-var
+    name: ${APP_NAME}_volume_php-var
   php-vendor:
-    name:
-      ${APP_NAME}_volume-php-vendor
-
-services:
-  php:
-    build: 
-      context: .
-      dockerfile: Dockerfile
-      args:
-        - "APP_ROOT=${APP_ROOT}"
-    image: ${APP_NAME}_image-php:latest
-    container_name: ${APP_NAME}_container-php
-    volumes: 
-      - .:${APP_ROOT}
-      - php-var:${APP_ROOT}/var             # Для того, чтобы папка не сбрасывалась после запуска конфигурации Docker-Compose
-      - php-vendor:${APP_ROOT}/vendor       # Для того, чтобы папка не сбрасывалась после запуска конфигурации Docker-Compose
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    networks:
-      - network
-
-  nginx:
-    image: nginx:1.21.1
-    container_name: ${APP_NAME}_container-nginx
-    volumes: 
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-    ports:
-      - ${SERVER_PORT}:80
-    depends_on:
-      - php
-      - postgres
-    networks:
-      - network
-
-  postgres:
-    image: postgres:13.4-buster
-    container_name: ${APP_NAME}_container-postgres
-    environment:
-      - POSTGRES_HOST=${DB_HOST}
-      - POSTGRES_DB=${DB_DATABASE}
-      - POSTGRES_USER=${DB_USERNAME}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-    ports:
-      - ${DB_PORT}:5432
-    networks:
-      - network
+    name: ${APP_NAME}_volume_php-vendor
+  postgres-data:
+    name: ${APP_NAME}_volume_postgres-data
+  pgadmin-data:
+    name: ${APP_NAME}_volume_pgadmin-data
 
 networks:
   network:
     name: ${APP_NAME}_network
+
+services:
+  php:
+    build:
+      args:
+        - APP_ROOT=${APP_ROOT}
+      context: .
+      dockerfile: dockerfile
+    container_name: ${APP_NAME}_container_php
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    image: ${APP_NAME}_image_php:8.0.9-fpm-buster
+    networks:
+      - network
+    volumes:
+      - .:${APP_ROOT}
+      - php-var:${APP_ROOT}/var
+      - php-vendor:${APP_ROOT}/vendor
+
+  nginx:
+    container_name: ${APP_NAME}_container_nginx
+    depends_on:
+      - php
+    image: nginx:1.21.1
+    networks:
+      - network
+    ports:
+      - ${APP_PORT}:80
+    volumes:
+      - .:${APP_ROOT}
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+
+  postgres:
+    build:
+      args:
+        - APP_ROOT=${APP_ROOT}
+      context: ./postgres
+      dockerfile: dockerfile
+    container_name: ${APP_NAME}_container_postgres
+    environment:
+      - POSTGRES_HOST=${DBMS_HOST}
+      - POSTGRES_PORT=${DBMS_PORT}
+      - POSTGRES_USER=${DBMS_USER_NAME}
+      - POSTGRES_PASSWORD=${DBMS_USER_PASSWORD}
+      - POSTGRES_DB=${DBMS_DB_NAME}
+    image: ${APP_NAME}_image_postgres:13.4-buster
+    networks:
+      - network
+    ports:
+      - ${DBMS_PORT}:5432
+    volumes:
+      - ./postgres/sql-scripts:/var/lib/postgresql/sql-scripts
+      - postgres-data:/var/lib/postgresql/data
+
+  pgadmin:
+    container_name: ${APP_NAME}_container_pgadmin
+    depends_on:
+      - postgres
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${DBMS_GUI_USER_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${DBMS_GUI_USER_PASSWORD}
+    image: dpage/pgadmin4:5.6
+    networks:
+      - network
+    ports:
+      - ${DBMS_GUI_PORT}:80
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin

@@ -11,6 +11,9 @@
             "port": 9003,
             "pathMappings": {
                 "/var/www/html": "${workspaceFolder}"
+            },
+            "env": {
+                "XDEBUG_CONFIG": "log_level=7", // Так как в php.ini log_level=0 для устранения постоянного спама предупреждениями при выключенном "Listening for Xdebug"
             }
         },
     ]
