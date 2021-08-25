@@ -2,10 +2,16 @@
 
 namespace App\Controller;
 
+use App\Entity\City;
+use App\Entity\Vacancy;
+use App\Entity\Resume;
 use CurlHandle;
+use DateTime;
+use DateTimeZone;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Collection;
 
 class DataController extends AbstractController
 {
@@ -58,24 +64,73 @@ class DataController extends AbstractController
     #[Route('/', name: 'index')]
     public function index(): Response
     {        
+        // Работаю не напрямую с БД, а с созданным API просто для того, чтобы показать, как, к примеру, я бы обрабатывал API извне (классы моделей тоже бы использовал)
+
         $cities_data = $this->getJsonFromApi("api/cities_list", $errors_texts);
         $vacancies_data = $this->getJsonFromApi("api/vacancies_list", $errors_texts);
         $resumes_data = $this->getJsonFromApi("api/resumes_list", $errors_texts);
 
-        $cities = $cities_data?->data;
+        /**
+         * @var City[]
+         */
+        $cities = array();
+        if($cities_data != null)
+        {
+            foreach($cities_data->data as $city_data)
+            {
+                $city = new City(
+                    $city_data->id,
+                    $city_data->name
+                );
+                $cities[$city_data->id] = $city;
+            }
+        }
+
+        /**
+         * @var Vacancy[]
+         */
         $vacancies = array();
         if($vacancies_data != null)
         {
             foreach($vacancies_data->data as $vacancy_data)
             {
-                $vacancies[$vacancy_data->id] = [
-                    'id' => $vacancy_data->id,
-                    'name' => $vacancy_data->name,
-                    'parent' => $vacancy_data->parent_id == null ? null : $vacancies[$vacancy_data->parent_id]
-                ];
+                $vacancy = new Vacancy(
+                    $vacancy_data->id,
+                    $vacancy_data->name,
+                    $vacancy_data->parent_id == null ? null : $vacancies[$vacancy_data->parent_id]
+                );
+                $vacancies[$vacancy_data->id] = $vacancy;
             }
         }
-        $resumes = $resumes_data?->data;
+        
+        /**
+         * @var Resume[]
+         */
+        $resumes = array();
+        if($resumes_data != null)
+        {
+            foreach($resumes_data->data as $resume_data)
+            {
+                $resume_city = $cities[$resume_data->city_to_work_in_id];
+                $resume_vacancy = $vacancies[$resume_data->desired_vacancy_id];
+                $resume = new Resume (
+                    $resume_data->id,
+                    $resume_data->full_name,
+                    $resume_data->about,
+                    $resume_data->work_experience,
+                    $resume_data->desired_salary,
+                    new DateTime($resume_data->birth_date->date, new DateTimeZone($resume_data->birth_date->timezone)), 
+                    new DateTime($resume_data->sending_datetime->date, new DateTimeZone($resume_data->sending_datetime->timezone)), 
+                    $resume_city,
+                    $resume_vacancy,
+                    $resume_data->avatar,
+                    $resume_data->file
+                );
+                $resume_city->addResume($resume);
+                $resume_vacancy->addResume($resume);
+                $resumes[$resume_data->id] = $resume;
+            }
+        }
 
         return $this->render('data/index.html.twig', [
             'errors_texts' => $errors_texts,

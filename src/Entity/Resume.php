@@ -61,14 +61,40 @@ class Resume
     private $desiredVacancy;
 
     /**
-     * @ORM\Column(type="binary", nullable=true)
+     * @ORM\Column(type="string", nullable=true)
      */
     private $avatar;
 
     /**
-     * @ORM\Column(type="blob", nullable=true)
+     * @ORM\Column(type="string", nullable=true)
      */
     private $file;
+
+    public function __construct(
+        int $id,
+        string $fullName,
+        ?string $about,
+        int $workExperience,
+        float $desiredSalary,
+        \DateTimeInterface $birthDate,
+        \DateTimeInterface $sendingDatetime,
+        City $cityToWorkIn,
+        Vacancy $desiredVacancy,
+        string $avatar,
+        string $file)
+    {
+        $this->id = $id;
+        $this   ->setFullName($fullName)
+                ->setAbout($about)
+                ->setWorkExperience($workExperience)
+                ->setDesiredSalary($desiredSalary)
+                ->setBirthDate($birthDate)
+                ->setSendingDatetime($sendingDatetime)
+                ->setCityToWorkIn($cityToWorkIn)
+                ->setDesiredVacancy($desiredVacancy)
+                ->setAvatar($avatar)
+                ->setFile($file);
+    }
 
     public function getId(): ?int
     {
@@ -135,12 +161,12 @@ class Resume
         return $this;
     }
 
-    public function getsendingDatetime(): ?\DateTimeInterface
+    public function getSendingDatetime(): ?\DateTimeInterface
     {
         return $this->sendingDatetime;
     }
 
-    public function setsendingDatetime(\DateTimeInterface $sendingDatetime): self
+    public function setSendingDatetime(\DateTimeInterface $sendingDatetime): self
     {
         $this->sendingDatetime = $sendingDatetime;
 

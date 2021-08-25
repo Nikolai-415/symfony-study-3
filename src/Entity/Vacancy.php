@@ -40,8 +40,11 @@ class Vacancy
      */
     private $resumes;
 
-    public function __construct()
+    public function __construct(int $id, string $name, ?self $parent)
     {
+        $this->id = $id;
+        $this->setName($name);
+        $this->setParent($parent);
         $this->vacancies = new ArrayCollection();
         $this->resumes = new ArrayCollection();
     }

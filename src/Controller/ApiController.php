@@ -62,6 +62,16 @@ class ApiController extends AbstractController
         {
             $data[] = [
                 'id' => $resume->getId(),
+                'full_name' => $resume->getFullName(),
+                'about' => $resume->getAbout(),
+                'work_experience' => $resume->getWorkExperience(),
+                'desired_salary' => $resume->getDesiredSalary(),
+                'birth_date' => $resume->getBirthDate(),
+                'sending_datetime' => $resume->getSendingDatetime(),
+                'city_to_work_in_id' => $resume->getCityToWorkIn()->getId(),
+                'desired_vacancy_id' => $resume->getDesiredVacancy()->getId(),
+                'avatar' => $resume->getAvatar(),
+                'file' => $resume->getFile(),
             ];
         }
 

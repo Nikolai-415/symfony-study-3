@@ -30,8 +30,10 @@ class City
      */
     private $resumes;
 
-    public function __construct()
+    public function __construct(int $id, string $name)
     {
+        $this->id = $id;
+        $this->setName($name);
         $this->resumes = new ArrayCollection();
     }
 
