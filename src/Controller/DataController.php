@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\City;
 use App\Entity\Vacancy;
 use App\Entity\Resume;
+use App\Form\DeleteDataFormType;
 use App\Form\EditDataFormType;
 use App\Repository\CityRepository;
 use App\Repository\ResumeRepository;
@@ -259,10 +260,39 @@ class DataController extends AbstractController
         ]);
     }
 
-    public function delete_data($id) : Response
+    public function delete_data(CityRepository $cityRepository, VacancyRepository $vacancyRepository, Request $request, $id) : Response
     {
-        return $this->render('data/delete_data.html.twig', [
+        $errors_texts = null;
+        $is_edit = false;
+        $resume = new Resume($cityRepository, $vacancyRepository);
 
+        $resume_data = $this->getJsonFromApi("api/get_data/$id", $errors_texts);
+        if($resume_data->errors == null)
+        {
+            $cities = $this->getCitiesFromApi($errors_texts);
+            $vacancies = $this->getVacanciesFromApi($errors_texts);
+            $resume = $this->getResumeFromJsonData($cityRepository, $vacancyRepository, $resume_data->data, $cities, $vacancies);
+        }
+        else
+        {
+            return $this->redirectToRoute('edit_data');
+        }
+        $form = $this->createForm(DeleteDataFormType::class, $resume);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $urn = "api/delete_data/$id";
+            $edit_result = $this->getJsonFromApi($urn, $errors_texts);
+
+            if(($errors_texts == null) && ($edit_result->data == 'success'))
+            {
+                return $this->redirectToRoute('data_list');
+            }
+        }
+
+        return $this->render('data/edit_data.html.twig', [
+            'errors_texts' => $errors_texts,
+            'is_edit' => $is_edit,
+            'form' => $form->createView(),
         ]);
     }
 }

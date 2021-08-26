@@ -210,4 +210,33 @@ class ApiController extends AbstractController
         $json = json_encode(array("errors" => $errors, "data" => $data), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT );
         return new JsonResponse($json, 200, [], true);
     }
+
+    
+
+    public function delete_data(
+        ResumeRepository $resumeRepository,
+        $id
+    ): JsonResponse
+    {
+        $errors = null;
+
+        $resume = $resumeRepository->findOneBy(array('id' => $id));
+
+        if($resume == null)
+        {
+            $errors[] = 'Запись не найдена!';
+            $data = null;
+        }
+        else
+        {
+            // Удаление записи из БД
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->remove($resume);
+            $entityManager->flush();
+    
+            $data = 'success';
+        }
+        $json = json_encode(array("errors" => $errors, "data" => $data), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT );
+        return new JsonResponse($json, 200, [], true);
+    }
 }
