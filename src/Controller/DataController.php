@@ -8,18 +8,12 @@ use App\Entity\Resume;
 use App\Form\DeleteDataFormType;
 use App\Form\EditDataFormType;
 use App\Repository\CityRepository;
-use App\Repository\ResumeRepository;
 use App\Repository\VacancyRepository;
-use CurlHandle;
 use DateTime;
 use DateTimeZone;
-use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Constraints\Collection;
-
 class DataController extends AbstractController
 {
     private $serverContainerName = "nginx";
@@ -230,7 +224,7 @@ class DataController extends AbstractController
             $urn = "api/edit_data";
             if($id != null)
             {
-                $urn += "/$id";
+                $urn .= "/$id";
             }
             $edit_result = $this->getJsonFromApi($urn, $errors_texts, array(
                 'full_name' => $resume->getFullName(),

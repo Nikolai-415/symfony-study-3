@@ -5,23 +5,5 @@
 {% block header %}Регистрация{% endblock %}
 
 {% block content %}
-    {{ form_start(registrationForm) }}
-        <input type="hidden" name="_csrf_token"
-            value="{{ csrf_token('authenticate') }}"
-        >
-        {{ form_row(registrationForm.username, {
-                label: 'Логин'
-           })
-        }}
-        {{ form_row(registrationForm.plainPassword, {
-                label: 'Пароль'
-           })
-        }}
-        {{ form_row(registrationForm.agreeTerms, {
-                label: 'Согласие с правилами сайта'
-           })
-        }}
-
-        <button type="submit" class="btn">Зарегистрироваться</button>
-    {{ form_end(registrationForm) }}
+    {{ form(form) }}
 {% endblock %}
