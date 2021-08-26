@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use App\Repository\CityRepository;
 use App\Repository\ResumeRepository;
+use App\Repository\VacancyRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -71,27 +73,29 @@ class Resume
     private $file;
 
     public function __construct(
-        int $id,
-        string $fullName,
-        ?string $about,
-        int $workExperience,
-        float $desiredSalary,
-        \DateTimeInterface $birthDate,
-        \DateTimeInterface $sendingDatetime,
-        City $cityToWorkIn,
-        Vacancy $desiredVacancy,
-        string $avatar,
-        string $file)
-    {
+        CityRepository $cityRepository,
+        VacancyRepository $vacancyRepository,
+        int $id = null,
+        string $fullName = null,
+        ?string $about = null,
+        int $workExperience = null,
+        float $desiredSalary = null,
+        \DateTimeInterface $birthDate = null,
+        \DateTimeInterface $sendingDatetime = null,
+        City $cityToWorkIn = null,
+        Vacancy $desiredVacancy = null,
+        string $avatar = null,
+        string $file = null
+    ) {
         $this->id = $id;
-        $this   ->setFullName($fullName)
+        $this   ->setFullName($fullName ?? '')
                 ->setAbout($about)
-                ->setWorkExperience($workExperience)
-                ->setDesiredSalary($desiredSalary)
-                ->setBirthDate($birthDate)
-                ->setSendingDatetime($sendingDatetime)
-                ->setCityToWorkIn($cityToWorkIn)
-                ->setDesiredVacancy($desiredVacancy)
+                ->setWorkExperience($workExperience ?? 0)
+                ->setDesiredSalary($desiredSalary ?? 0)
+                ->setBirthDate($birthDate ?? new \DateTime())
+                ->setSendingDatetime($sendingDatetime ?? new \DateTime())
+                ->setCityToWorkIn($cityToWorkIn ?? $cityRepository->findOneBy(array('id' => 0)))
+                ->setDesiredVacancy($desiredVacancy ?? $vacancyRepository->findOneBy(array('id' => 0)))
                 ->setAvatar($avatar)
                 ->setFile($file);
     }

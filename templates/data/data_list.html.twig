@@ -32,7 +32,7 @@
                 <tr>
                     <td>{{ resume.id }}</td>
                     <td>{{ resume.getFullName() }}</td>
-                    <td>{{ resume.getAbout() ?? 'Нет информации' }}</td>
+                    <td>{{ (resume.getAbout() ?? '') == '' ? 'Нет информации' : resume.getAbout() }}</td>
                     <td>{{ resume.getWorkExperience() }}</td>
                     <td>{{ resume.getDesiredSalary() }}</td>
                     <td>{{ resume.getBirthDate().format('d.m.Y') }}</td>

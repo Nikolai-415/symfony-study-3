@@ -22,6 +22,14 @@ app_logout:
 # ===================================================================
 # API - работа с записями
 # ===================================================================
+api_cities_list:
+    path: /api/cities_list
+    controller: App\Controller\ApiController::cities_list
+
+api_vacancies_list:
+    path: /api/vacancies_list
+    controller: App\Controller\ApiController::vacancies_list
+
 api_data_list:
     path: /api/data_list
     controller: App\Controller\ApiController::data_list
@@ -33,7 +41,7 @@ api_get_data:
         id: '\d+'
 
 api_edit_data:
-    path: /api/edit_data/{id}
+    path: /api/edit_data/{id?}
     controller: App\Controller\ApiController::edit_data
     requirements:
         id: '\d+'

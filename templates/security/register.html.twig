@@ -1,20 +1,27 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Регистрация{% endblock %}
+
+{% block header %}Регистрация{% endblock %}
 
 {% block content %}
-    <h1>Register</h1>
-
     {{ form_start(registrationForm) }}
         <input type="hidden" name="_csrf_token"
             value="{{ csrf_token('authenticate') }}"
         >
-        {{ form_row(registrationForm.username) }}
+        {{ form_row(registrationForm.username, {
+                label: 'Логин'
+           })
+        }}
         {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+                label: 'Пароль'
+           })
+        }}
+        {{ form_row(registrationForm.agreeTerms, {
+                label: 'Согласие с правилами сайта'
+           })
+        }}
 
-        <button type="submit" class="btn">Register</button>
+        <button type="submit" class="btn">Зарегистрироваться</button>
     {{ form_end(registrationForm) }}
 {% endblock %}

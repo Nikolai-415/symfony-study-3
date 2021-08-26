@@ -47,11 +47,16 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/data_list, roles: ROLE_LIST_VIEW }
+        - { path: ^/api/cities_list, roles: ROLE_LIST_VIEW }
+        - { path: ^/api/vacancies_list, roles: ROLE_LIST_VIEW }
         - { path: ^/api/data_list, roles: ROLE_LIST_VIEW }
 
         - { path: ^/edit_data/\d+$, roles: ROLE_EDIT }
         - { path: ^/api/get_data/\d+$, roles: ROLE_EDIT }
         - { path: ^/api/edit_data/\d+$, roles: ROLE_EDIT }
+
+        - { path: ^/edit_data, roles: ROLE_ADD }
+        - { path: ^/api/edit_data, roles: ROLE_ADD }
 
         - { path: ^/delete_data/\d+$, roles: ROLE_DELETE }
         - { path: ^/api/delete_data/\d+$, roles: ROLE_DELETE }
