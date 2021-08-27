@@ -5,5 +5,22 @@
 {% block header %}Регистрация{% endblock %}
 
 {% block content %}
-    {{ form(form) }}
+    {{ form_start(form, {
+            attr: { class: 'w-50 mx-auto' },
+    })}}
+        {{ form_row(form.username, {
+            row_attr: { class: 'input-group' },
+            label: 'Логин',
+            label_attr: { class: 'col-3' },
+        })}}
+        {{ form_row(form.plainPassword, {
+            row_attr: { class: 'input-group' },
+            label: 'Пароль',
+            label_attr: { class: 'col-3' },
+        })}}
+        {{ form_row(form.submit, {
+                label: 'Зарегистрироваться',
+                row_attr: { class: 'mt-2' },
+        })}}
+    {{ form_end(form) }}
 {% endblock %}

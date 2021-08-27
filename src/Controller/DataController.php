@@ -283,7 +283,7 @@ class DataController extends AbstractController
             }
         }
 
-        return $this->render('data/edit_data.html.twig', [
+        return $this->render('data/delete_data.html.twig', [
             'errors_texts' => $errors_texts,
             'is_edit' => $is_edit,
             'form' => $form->createView(),

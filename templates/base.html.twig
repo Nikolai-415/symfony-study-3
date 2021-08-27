@@ -7,45 +7,64 @@
         {# Run `composer require symfony/webpack-encore-bundle`
            and uncomment the following Encore helpers to start using Symfony UX #}
         {% block stylesheets %}
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
             {#{{ encore_entry_link_tags('app') }}#}
         {% endblock %}
 
         {% block javascripts %}
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
             {#{{ encore_entry_script_tags('app') }}#}
         {% endblock %}
     </head>
     <body>
         <header>
-            <div class="logo">
+            <div class="text-center display-1">
                 АИС
             </div>
-            <div class="menu">
-                <a href="{{ path('index') }}">Главная</a>
+            <ul class="nav justify-content-center nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link {% if app.request.attributes.get('_route') == 'index' %} active {% endif %}" aria-current="page" href="{{ path('index') }}">Главная</a>
+                </li>
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %} {# Если пользователь авторизован #}
-                    <a href="{{ path('app_logout') }}">Выйти</a>
+                    {% if is_granted('ROLE_LIST_VIEW') %} {# Если пользователь имеет права на просмотр записей #}
+                        <li class="nav-item">
+                            <a class="nav-link {% if app.request.attributes.get('_route') == 'data_list' %} active {% endif %}" aria-current="page" href="{{ path('data_list') }}">Просмотр записей</a>
+                        </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if app.request.attributes.get('_route') == 'app_logout' %} active {% endif %}" href="{{ path('app_logout') }}">Выйти</a>
+                    </li>
                 {% else %}
-                    <a href="{{ path('app_login') }}">Авторизация</a>
-                    <a href="{{ path('app_register') }}">Регистрация</a>
+                    <li class="nav-item">
+                        <a class="nav-link {% if app.request.attributes.get('_route') == 'app_login' %} active {% endif %}" href="{{ path('app_login') }}">Авторизация</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if app.request.attributes.get('_route') == 'app_register' %} active {% endif %}" href="{{ path('app_register') }}">Регистрация</a>
+                    </li>
                 {% endif %}
+            </ul>
+            <div class="text-center">
             </div>
         </header>
         <main>
-            <h1>
+            <h1 class="text-center mt-2 mb-4">
                 {% block header %}Заголовок по умолчанию{% endblock %}
             </h1>
-            {% if errors_texts ?? false %}
-            
-                При попытке загрузки данных возникли следующие ошибки:
-                {% for error_text in errors_texts %}
-                    <li>{{ error_text }};</li>
-                {% endfor %}
-
-            {% endif %}
+            <div class="text-center">
+                {% if errors_texts ?? false %}
+                    При попытке загрузки данных возникли следующие ошибки:
+                    {% for error_text in errors_texts %}
+                        <li>{{ error_text }};</li>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="text-center">
             {% block content %}
                 Содержание страницы по умолчанию
             {% endblock %}
+            </div>
         </main>
-        <footer>
+        <footer class="text-center mt-4">
             2021 г.
         </footer>
     </body>

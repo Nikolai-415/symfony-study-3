@@ -14,8 +14,10 @@ class DeleteDataFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('agreeTerms'  , CheckboxType::class   , [ 'label' => 'Подтвердить удаление', 'mapped' => false ])
-            ->add('delete'      , SubmitType::class     , [ 'label' => 'Удалить' ])
+            ->add('confirmDelete', CheckboxType::class, [
+                'mapped' => false
+            ])
+            ->add('submit'      , SubmitType::class)
         ;
     }
 

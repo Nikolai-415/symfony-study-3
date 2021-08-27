@@ -12,11 +12,9 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Validator\Constraints\PositiveOrZero;
 
 class EditDataFormType extends AbstractType
@@ -27,62 +25,48 @@ class EditDataFormType extends AbstractType
         for($year = 2000; $year <= 2021; $year++) $sendingDatetimeYears[] = $year;
         
         $builder
-            ->add('fullName', TextType::class, [
-                'label' => 'ФИО'
-            ])
+            ->add('fullName', TextType::class)
             ->add('about'           , TextareaType::class, [
-                'label' => 'Обо мне',
-                'required' => false
+                'required' => false,
             ])
             ->add('workExperience', IntegerType::class, [
-                'label' => 'Опыт работы',
                 'constraints' => [
                     new PositiveOrZero([
-                        'message' => '{{ label }} не может быть меньше нуля!',
+                        'message' => 'Опыт работы не может быть меньше нуля!',
                     ])
                 ],
             ])
-            ->add('desiredSalary', NumberType::class, [
-                'label' => 'Желаемая заработная плата',
+            ->add('desiredSalary', IntegerType::class, [
                 'constraints' => [
                     new PositiveOrZero([
-                        'message' => '{{ label }} не может быть меньше нуля!',
-                    ])
+                        'message' => 'Желаемая заработная плата не может быть меньше нуля!',
+                    ]),
                 ],
             ])
-            ->add('birthDate', BirthdayType::class, [
-                'label' => 'Дата рождения'
-            ])
+            ->add('birthDate', BirthdayType::class)
             ->add('sendingDatetime', DateTimeType::class, [
-                 'label' => 'Дата отправки',
                 'with_seconds' => true,
-                'years' => $sendingDatetimeYears
+                'years' => $sendingDatetimeYears,
             ])
             ->add('avatar', TextType::class, [ // Потом использовать FileType::class
-                'label' => 'Аватар',
-                'required' => false
+                'required' => false,
             ])
             ->add('file', TextType::class, [ // Потом использовать FileType::class
-                'label' => 'Файл резюме',
-                'required' => false
+                'required' => false,
             ])
             ->add('cityToWorkIn', EntityType::class, [
-                'label' => 'Город трудоустройства',
                 'class' => City::class,
                 'choice_label' => 'name',
-                'choice_value' => 'id'
+                'choice_value' => 'id',
             ])
             ->add('desiredVacancy', EntityType::class, [
-                'label' => 'Желаемая вакансия',
                 'class' => Vacancy::class,
                 'choice_label' => function ($choice, $key, $value) {
                     return $choice->getNameWithTabs();
                 },
-                'choice_value' => 'id'
+                'choice_value' => 'id',
             ])
-            ->add('save', SubmitType::class, [
-                'label' => 'Сохранить',
-            ])
+            ->add('submit', SubmitType::class)
         ;
     }
 

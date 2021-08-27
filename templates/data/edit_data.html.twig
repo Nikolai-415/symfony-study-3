@@ -17,6 +17,65 @@
 {% endblock %}
 
 {% block content %}
-    <a href="{{ path('data_list') }}">Назад</a>
-    {{ form(form) }}
+    <a href="{{ path('data_list') }}" class="btn-warning btn mb-2">Назад</a>
+    {{ form_start(form, {
+            attr: { class: 'w-75 mx-auto' },
+    })}}
+        {{  form_row(form.fullName, {
+                label: 'ФИО',
+                row_attr: { class: 'input-group' },
+                label_attr: { class: 'col-4' },
+        })}}
+        {{ form_row(form.birthDate, {
+                row_attr: { class: 'input-group' },
+                label: 'Дата рождения',
+                label_attr: { class: 'col-4 input-group-text' },
+                attr: { class: 'col-8' },
+        })}}
+        {{ form_row(form.about, {
+                row_attr: { class: 'input-group' },
+                label: 'О себе',
+                label_attr: { class: 'col-4' },
+        })}}
+        {{  form_row(form.workExperience, {
+                row_attr: { class: 'input-group' },
+                label: 'Опыт работы (лет)',
+                label_attr: { class: 'col-4' },
+        })}}
+        {{  form_row(form.desiredSalary, {
+                row_attr: { class: 'input-group' },
+                label: 'Желаемая заработная плата (руб.)',
+                label_attr: { class: 'col-4' },
+        })}}
+        {{ form_row(form.sendingDatetime, {
+                row_attr: { class: 'input-group row-cols-lg-auto' },
+                label: 'Дата отправки',
+                label_attr: { class: 'col-4 input-group-text' },
+                attr: { class: 'col-8' },
+        })}}
+        {{ form_row(form.avatar, {
+                row_attr: { class: 'input-group' },
+                label: 'Аватар',
+                label_attr: { class: 'col-4' },
+        })}}
+        {{ form_row(form.file, {
+                row_attr: { class: 'input-group' },
+                label: 'Файл резюме',
+                label_attr: { class: 'col-4' },
+        })}}
+        {{ form_row(form.cityToWorkIn, {
+                row_attr: { class: 'input-group' },
+                label: 'Город трудоустройства',
+                label_attr: { class: 'col-4' },
+        })}}
+        {{ form_row(form.desiredVacancy, {
+                row_attr: { class: 'input-group' },
+                label: 'Желаемая вакансия',
+                label_attr: { class: 'col-4' },
+        })}}
+        {{ form_row(form.submit, {
+                label: 'Сохранить',
+                row_attr: { class: 'mt-2' },
+        })}}
+    {{ form_end(form) }}
 {% endblock %}
