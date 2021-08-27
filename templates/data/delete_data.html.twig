@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Удаление записи{% endblock %}
+
+{% block header %}Удаление записи{% endblock %}
+
+{% block content %}
+    <a href="{{ path('data_list') }}" class="btn-warning btn mb-2">Назад</a>
+    {{ form_start(form, {
+            attr: { class: 'w-25 mx-auto' },
+    })}}
+        {{ form_row(form.confirmDelete, {
+                row_attr: { class: 'input-group-text' },
+                label: 'Подтвердить удаление',
+                label_attr: { class: 'col-6' },
+        })}}
+        {{ form_row(form.submit, {
+                row_attr: { class: 'mt-2' },
+                label: 'Удалить',
+        })}}
+    {{ form_end(form) }}
+{% endblock %}

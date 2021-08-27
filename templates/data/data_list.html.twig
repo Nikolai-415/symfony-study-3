@@ -1,24 +1,18 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Заголовок страницы{% endblock %}
+{% block title %}Просмотр записей{% endblock %}
 
-{% block header %}Заголовок страницы{% endblock %}
+{% block header %}Просмотр записей{% endblock %}
 
 {% block content %}
-    {% if is_granted('ROLE_LIST_VIEW') %}
-        {% if errors_texts %}
-        
-            При попытке загрузки данных возникли следующие ошибки:
-            {% for error_text in errors_texts %}
-                <li>{{ error_text }};</li>
-            {% endfor %}
+    {% if is_granted('ROLE_ADD') %}
+        <div>
+            <a href="{{ path('edit_data') }}" class="btn-success btn mb-2">Добавить</a>
+        </div>
+    {% endif %}
 
-        {% endif %}
-
-        <table class="table_data">
-            <tr>
-                <th colspan="11">Resumes ({{ resumes|length }})</th>
-            </tr>
+    <table class="table table-striped table-hover table-bordered align-middle table-responsive table-sm">
+        <thead class="table-secondary align-middle">
             <tr>
                 <th>ID</th>
                 <th>ФИО</th>
@@ -31,13 +25,16 @@
                 <th>Выбранная вакансия</th>
                 <th>Аватар</th>
                 <th>Файл резюме</th>
+                <th colspan="2">Действия</th>
             </tr>
+        </thead>
+        <tbody>
             {% if resumes|length != 0 %}
                 {% for resume in resumes %}
                     <tr>
                         <td>{{ resume.id }}</td>
                         <td>{{ resume.getFullName() }}</td>
-                        <td>{{ resume.getAbout() ?? 'Нет информации' }}</td>
+                        <td>{{ (resume.getAbout() ?? '') == '' ? 'Нет информации' : resume.getAbout() }}</td>
                         <td>{{ resume.getWorkExperience() }}</td>
                         <td>{{ resume.getDesiredSalary() }}</td>
                         <td>{{ resume.getBirthDate().format('d.m.Y') }}</td>
@@ -46,15 +43,27 @@
                         <td>{{ resume.getDesiredVacancy().getName() }}</td>
                         <td>{{ resume.getAvatar() }}</td>
                         <td>{{ resume.getFile() }}</td>
+                        <td>
+                            {% if is_granted('ROLE_EDIT') %}
+                                <a href="{{ path('edit_data', { id: resume.id }) }}" class="btn-warning btn">Изменить</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if is_granted('ROLE_DELETE') %}
+                                <a href="{{ path('delete_data', { id: resume.id }) }}" class="btn-danger btn">Удалить</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             {% else %}
                 <tr>
-                    <td colspan="11">Нет резюме!</td>
+                    <td colspan="13">Нет резюме!</td>
                 </tr>
             {% endif %}
-        </table>
-    {% else %}
-        Добро пожаловать!
-    {% endif %}
+        </tbody>
+    </table>
 {% endblock %}

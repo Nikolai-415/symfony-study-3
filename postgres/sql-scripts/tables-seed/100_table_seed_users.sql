@@ -7,7 +7,7 @@ INSERT INTO users(
     'admin',
     '$2y$13$Bd4lYnshGMcjlbdCOqoiiOyCwre1pp9SmWw2KsgQNDPOh7GdrxRyy',
     'admin:$2y$13$Bd4lYnshGMcjlbdCOqoiiOyCwre1pp9SmWw2KsgQNDPOh7GdrxRyy',
-    '["ROLE_LIST_VIEW"]'
+    '["ROLE_LIST_VIEW", "ROLE_ADD", "ROLE_EDIT", "ROLE_DELETE"]'
 );
 
 INSERT INTO users(

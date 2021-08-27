@@ -59,6 +59,18 @@ class Vacancy
         return $this->name;
     }
 
+    public function getNameWithTabs(): string
+    {
+        $tabs = "";
+        $parent = $this->parent;
+        while ($parent != null)
+        {
+            $parent = $parent->parent;
+            $tabs .= " -  - ";
+        }
+        return $tabs." ".$this->name;
+    }
+
     public function setName(string $name): self
     {
         $this->name = $name;
