@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\City;
 use App\Entity\Vacancy;
 use App\Entity\Resume;
+use App\Form\DataListFormType;
 use App\Form\DeleteDataFormType;
 use App\Form\EditDataFormType;
 use App\Repository\CityRepository;
@@ -179,17 +180,24 @@ class DataController extends AbstractController
         return $resumes;
     }
 
-    public function data_list(CityRepository $cityRepository, VacancyRepository $vacancyRepository): Response
+    public function data_list(CityRepository $cityRepository, VacancyRepository $vacancyRepository, Request $request): Response
     {        
         $cities = $this->getCitiesFromApi($errors_texts);
         $vacancies = $this->getVacanciesFromApi($errors_texts);
         $resumes = $this->getResumesFromApi($cityRepository, $vacancyRepository, $cities, $vacancies, $errors_texts);
 
+        $form = $this->createForm(DataListFormType::class);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            // ...
+        }
+
         return $this->render('data/data_list.html.twig', [
             'errors_texts' => $errors_texts,
             'cities' => $cities,
             'vacancies' => $vacancies,
-            'resumes' => $resumes
+            'resumes' => $resumes,
+            'form' => $form->createView()
         ]);
     }
 
