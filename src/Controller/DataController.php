@@ -365,6 +365,11 @@ class DataController extends AbstractController
                 return $response;
             }
         }
-        return new Response('false');
+        $errors_as_text = "";
+        foreach($resume_data->errors as $error)
+        {
+            $errors_as_text .= $error." ";
+        }
+        return new Response("При скачивании файла возникли ошибки: $errors_as_text");
     } 
 }
