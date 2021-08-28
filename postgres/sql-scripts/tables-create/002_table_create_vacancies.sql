@@ -7,5 +7,3 @@ CREATE TABLE vacancies
 	CONSTRAINT ukey_vacancies_name_and_parent_id	UNIQUE(name, parent_id),
     CONSTRAINT fkey_vacancies_to_vacancies      FOREIGN KEY(parent_id)     REFERENCES vacancies(id)
 );
-INSERT INTO vacancies(id, name, parent_id) VALUES (0, 'Любая', NULL);
-ALTER TABLE vacancies ALTER COLUMN id RESTART SET START 1;

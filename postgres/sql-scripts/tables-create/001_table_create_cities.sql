@@ -4,5 +4,3 @@ CREATE TABLE cities
 	name        VARCHAR(64)     NOT NULL,
 	CONSTRAINT  pkey_cities_id	PRIMARY KEY(id)
 );
-INSERT INTO cities(id, name) VALUES (0, 'Любой');
-ALTER TABLE cities ALTER COLUMN id RESTART SET START 1;

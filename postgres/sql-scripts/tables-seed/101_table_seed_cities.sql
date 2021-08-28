@@ -1,15 +1,17 @@
-INSERT INTO cities(name) VALUES('Москва');
-INSERT INTO cities(name) VALUES('Санкт-Петербург');
-INSERT INTO cities(name) VALUES('Новосибирск');
-INSERT INTO cities(name) VALUES('Екатеринбург');
-INSERT INTO cities(name) VALUES('Казань');
-INSERT INTO cities(name) VALUES('Нижний новгород');
-INSERT INTO cities(name) VALUES('Челябинск');
-INSERT INTO cities(name) VALUES('Самара');
-INSERT INTO cities(name) VALUES('Омск');
-INSERT INTO cities(name) VALUES('Ростов-на-Дону');
-INSERT INTO cities(name) VALUES('Уфа');
-INSERT INTO cities(name) VALUES('Красноярск');
-INSERT INTO cities(name) VALUES('Воронеж');
-INSERT INTO cities(name) VALUES('Пермь');
-INSERT INTO cities(name) VALUES('Волгоград');
+INSERT INTO cities(name) VALUES
+    ('Любой'),
+    ('Москва'),
+    ('Санкт-Петербург'),
+    ('Новосибирск'),
+    ('Екатеринбург'),
+    ('Казань'),
+    ('Нижний новгород'),
+    ('Челябинск'),
+    ('Самара'),
+    ('Омск'),
+    ('Ростов-на-Дону'),
+    ('Уфа'),
+    ('Красноярск'),
+    ('Воронеж'),
+    ('Пермь'),
+    ('Волгоград');

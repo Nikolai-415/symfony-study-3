@@ -1,69 +1,53 @@
-
-ALTER TABLE vacancies ALTER COLUMN id RESTART SET START 12;
-
-INSERT INTO vacancies(parent_id, id, name) VALUES (0, 1,   'Медицина');
-INSERT INTO vacancies(parent_id, name)     VALUES (1,          'Биохимик');
-INSERT INTO vacancies(parent_id, name)     VALUES (1,          'Врач-лаборант');
-INSERT INTO vacancies(parent_id, name)     VALUES (1,          'Врач общей практики');
-INSERT INTO vacancies(parent_id, name)     VALUES (1,          'Врач скорой помощи');
-INSERT INTO vacancies(parent_id, name)     VALUES (1,          'Военный врач');
-INSERT INTO vacancies(parent_id, name)     VALUES (1,          'Диетолог');
-INSERT INTO vacancies(parent_id, name)     VALUES (1,          'ЛОР');
-INSERT INTO vacancies(parent_id, name)     VALUES (1,          'Нарколог');
-INSERT INTO vacancies(parent_id, id, name) VALUES (1, 2,       'Невролог');
-INSERT INTO vacancies(parent_id, name)     VALUES (2,              'Нейропсихолог');
-INSERT INTO vacancies(parent_id, name)     VALUES (2,              'Нейротравматолог');
-INSERT INTO vacancies(parent_id, name)     VALUES (2,              'Нейрохирург');
-INSERT INTO vacancies(parent_id, id, name) VALUES (1, 3,       'Онколог');
-INSERT INTO vacancies(parent_id, name)     VALUES (3,              'Онкогематолог');
-INSERT INTO vacancies(parent_id, name)     VALUES (3,              'Онкогинеколог');
-INSERT INTO vacancies(parent_id, name)     VALUES (3,              'Онкодерматолог');
-INSERT INTO vacancies(parent_id, name)     VALUES (3,              'Онкоуролог');
-INSERT INTO vacancies(parent_id, name)     VALUES (1,          'Педиатр');
-INSERT INTO vacancies(parent_id, name)     VALUES (1,          'Санитарный врач');
-INSERT INTO vacancies(parent_id, name)     VALUES (1,          'Хирург');
-INSERT INTO vacancies(parent_id, id, name) VALUES (0, 4,   'Недвижимость');
-INSERT INTO vacancies(parent_id, name)     VALUES (4,          'Агент по недвижимости');
-INSERT INTO vacancies(parent_id, name)     VALUES (4,          'Риэлтор');
-INSERT INTO vacancies(parent_id, id, name) VALUES (0, 5,   'Преподавание и языки');
-INSERT INTO vacancies(parent_id, name)     VALUES (5,          'Методист');
-INSERT INTO vacancies(parent_id, name)     VALUES (5,          'Преподаватель');
-INSERT INTO vacancies(parent_id, name)     VALUES (5,          'Социальный педагог');
-INSERT INTO vacancies(parent_id, name)     VALUES (5,          'Лингвист');
-INSERT INTO vacancies(parent_id, name)     VALUES (5,          'Русист');
-INSERT INTO vacancies(parent_id, id, name) VALUES (0, 6,   'Экономика, бизнес, страхование');
-INSERT INTO vacancies(parent_id, name)     VALUES (6,          'Администратор');
-INSERT INTO vacancies(parent_id, name)     VALUES (6,          'Аудитор');
-INSERT INTO vacancies(parent_id, id, name) VALUES (6, 7,       'Безопасность');
-INSERT INTO vacancies(parent_id, name)     VALUES (7,              'Инженер по охране труда');
-INSERT INTO vacancies(parent_id, name)     VALUES (7,              'Пожарный инспектор');
-INSERT INTO vacancies(parent_id, name)     VALUES (7,              'Инженер по пожарной безопасности');
-INSERT INTO vacancies(parent_id, name)     VALUES (6,          'Бухгалтер');
-INSERT INTO vacancies(parent_id, id, name) VALUES (6, 8,       'Директора и руководители');
-INSERT INTO vacancies(parent_id, name)     VALUES (8,              'Генеральный директор');
-INSERT INTO vacancies(parent_id, name)     VALUES (8,              'Директор по маркетингу');
-INSERT INTO vacancies(parent_id, name)     VALUES (8,              'Директор по производству');
-INSERT INTO vacancies(parent_id, name)     VALUES (8,              'Директор по развитию');
-INSERT INTO vacancies(parent_id, name)     VALUES (8,              'Исполнительный директор');
-INSERT INTO vacancies(parent_id, name)     VALUES (8,              'Технический директор');
-INSERT INTO vacancies(parent_id, name)     VALUES (8,              'Финансовый директор');
-INSERT INTO vacancies(parent_id, name)     VALUES (6,          'Инкассатор');
-INSERT INTO vacancies(parent_id, name)     VALUES (6,          'Кассир');
-INSERT INTO vacancies(parent_id, name)     VALUES (6,          'Маркетолог');
-INSERT INTO vacancies(parent_id, name)     VALUES (6,          'Метролог');
-INSERT INTO vacancies(parent_id, name)     VALUES (6,          'Промоутер');
-INSERT INTO vacancies(parent_id, id, name) VALUES (6, 9,       'Секретариат и делопроизводство');
-INSERT INTO vacancies(parent_id, name)     VALUES (9,              'Архивариус');
-INSERT INTO vacancies(parent_id, name)     VALUES (9,              'Делопроизводитель');
-INSERT INTO vacancies(parent_id, name)     VALUES (9,              'Офис-менеджер');
-INSERT INTO vacancies(parent_id, name)     VALUES (9,              'Секретарь');
-INSERT INTO vacancies(parent_id, id, name) VALUES (6, 10,      'Страхование');
-INSERT INTO vacancies(parent_id, name)     VALUES (10,             'Актуарий');
-INSERT INTO vacancies(parent_id, name)     VALUES (10,             'Андеррайтер');
-INSERT INTO vacancies(parent_id, name)     VALUES (10,             'Страховой агент');
-INSERT INTO vacancies(parent_id, id, name) VALUES (0, 11,  'Юриспруденция');
-INSERT INTO vacancies(parent_id, name)     VALUES (11,         'Адвокат');
-INSERT INTO vacancies(parent_id, name)     VALUES (11,         'Нотариус');
-INSERT INTO vacancies(parent_id, name)     VALUES (11,         'Судебный эксперт');
-INSERT INTO vacancies(parent_id, name)     VALUES (11,         'Юрисконсульт');
-INSERT INTO vacancies(parent_id, name)     VALUES (11,         'Юрист');
+INSERT INTO vacancies(id, parent_id, name) VALUES
+    ( 0, null,  'Любая'),
+    ( 1,    0,      'Медицина'),
+    ( 2,    1,          'Врач-лаборант'),
+    ( 3,    1,          'Врач общей практики'),
+    ( 4,    1,          'Врач скорой помощи'),
+    ( 5,    1,          'Невролог'),
+    ( 6,    5,              'Нейропсихолог'),
+    ( 7,    5,              'Нейротравматолог'),
+    ( 8,    5,              'Нейрохирург'),
+    ( 9,    1,          'Онколог'),
+    (10,    1,         'Педиатр'),
+    (11,    1,         'Хирург'),
+    (12,    0,      'Недвижимость'),
+    (13,   12,          'Агент по недвижимости'),
+    (14,   12,          'Риэлтор'),
+    (15,    0,      'Преподавание и языки'),
+    (16,   15,          'Методист'),
+    (17,   15,          'Преподаватель'),
+    (18,   15,          'Социальный педагог'),
+    (19,   15,          'Лингвист'),
+    (20,    0,      'Экономика, бизнес, страхование'),
+    (21,   20,          'Администратор'),
+    (22,   20,          'Аудитор'),
+    (23,   20,          'Безопасность'),
+    (24,   23,              'Инженер по охране труда'),
+    (25,   23,              'Пожарный инспектор'),
+    (26,   23,              'Инженер по пожарной безопасности'),
+    (27,   20,          'Бухгалтер'),
+    (28,   20,          'Директора и руководители'),
+    (29,   28,              'Генеральный директор'),
+    (30,   28,              'Директор по маркетингу'),
+    (31,   28,              'Директор по производству'),
+    (32,   28,              'Исполнительный директор'),
+    (33,   28,              'Технический директор'),
+    (34,   28,              'Финансовый директор'),
+    (35,   20,          'Маркетолог'),
+    (36,   20,          'Метролог'),
+    (37,   20,          'Промоутер'),
+    (38,   20,          'Секретариат и делопроизводство'),
+    (39,   38,              'Архивариус'),
+    (40,   38,              'Офис-менеджер'),
+    (41,   38,              'Секретарь'),
+    (42,   20,          'Страхование'),
+    (43,   42,              'Актуарий'),
+    (44,   42,              'Андеррайтер'),
+    (45,   42,              'Страховой агент'),
+    (46,    0,      'Юриспруденция'),
+    (47,   46,          'Адвокат'),
+    (48,   46,          'Нотариус'),
+    (49,   46,          'Судебный эксперт'),
+    (50,   46,          'Юрист');
+ALTER TABLE vacancies ALTER COLUMN id RESTART SET START 51;
