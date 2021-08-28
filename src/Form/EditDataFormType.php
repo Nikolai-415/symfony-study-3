@@ -10,12 +10,15 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Validator\Constraints\File as ConstraintsFile;
 use Symfony\Component\Validator\Constraints\PositiveOrZero;
 
 class EditDataFormType extends AbstractType
@@ -49,11 +52,36 @@ class EditDataFormType extends AbstractType
                 'with_seconds' => true,
                 'years' => $sendingDatetimeYears,
             ])
-            ->add('avatar', TextType::class, [ // Потом использовать FileType::class
+            ->add('deleteAvatar', CheckboxType::class, [
                 'required' => false,
+                'mapped' => false,
             ])
-            ->add('file', TextType::class, [ // Потом использовать FileType::class
+            ->add('avatar', FileType::class, [
                 'required' => false,
+                'mapped' => false,
+
+                // unmapped fields can't define their validation using annotations
+                // in the associated entity, so you can use the PHP constraint classes
+                'constraints' => [
+                    new ConstraintsFile([
+                        'maxSize' => '1024k',
+                        'mimeTypes' => [
+                            'image/bmp',
+                            'image/gif',
+                            'image/jpeg',
+                            'image/png',
+                        ],
+                        'mimeTypesMessage' => 'Разрешённые форматы: .bmp, .gif, .jpeg, .jpg, .png.',
+                    ])
+                ],
+            ])
+            ->add('deleteFile', CheckboxType::class, [
+                'required' => false,
+                'mapped' => false,
+            ])
+            ->add('file', FileType::class, [
+                'required' => false,
+                'mapped' => false,
             ])
             ->add('cityToWorkIn', EntityType::class, [
                 'class' => City::class,

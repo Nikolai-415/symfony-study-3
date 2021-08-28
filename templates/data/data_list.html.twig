@@ -41,8 +41,20 @@
                         <td>{{ resume.getSendingDatetime().format('d.m.Y H:i:s') }}</td>
                         <td>{{ resume.getCityToWorkIn().getName() }}</td>
                         <td>{{ resume.getDesiredVacancy().getName() }}</td>
-                        <td>{{ resume.getAvatar() }}</td>
-                        <td>{{ resume.getFile() }}</td>
+                        <td>
+                            {% if resume.getAvatar() %}
+                                <img src="data:image/jpeg;base64,{{ resume.getAvatar() }}" class="avatar" alt="&nbsp;Ошибка при загрузке картинки" />
+                            {% else %}
+                                Не установлен
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if resume.getFile() %}
+                                <a href="{{ path('download_file', { id: resume.id }) }}" target="_blank" class="btn-secondary btn">Скачать</a>
+                            {% else %}
+                                Не прикреплён
+                            {% endif %}
+                        </td>
                         <td>
                             {% if is_granted('ROLE_EDIT') %}
                                 <a href="{{ path('edit_data', { id: resume.id }) }}" class="btn-warning btn">Изменить</a>

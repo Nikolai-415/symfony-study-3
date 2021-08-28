@@ -63,7 +63,8 @@ class ApiController extends AbstractController
             'city_to_work_in_id' => $resume->getCityToWorkIn()->getId(),
             'desired_vacancy_id' => $resume->getDesiredVacancy()->getId(),
             'avatar' => $resume->getAvatar(),
-            'file' => $resume->getFile()
+            'file' => $resume->getFile(),
+            'file_name' => $resume->getFileName()
         );
     }
 
@@ -194,10 +195,16 @@ class ApiController extends AbstractController
                 $resume->setAvatar($avatar);
             }
             
-            if($request->request->has('file'))
+            if($request->request->has('file') || $request->request->has('file_name'))
             {
-                $file = $request->get('file');
-                $resume->setFile($file);
+                if($request->request->has('file') && $request->request->has('file_name'))
+                {
+                    $file = $request->get('file');
+                    $resume->setFile($file);
+                    $fileName = $request->get('file_name');
+                    $resume->setFileName($fileName);
+                }
+                else $errors[] = 'Должны быть указаны file и file_name!';
             }
 
             // Обновление записи в БД

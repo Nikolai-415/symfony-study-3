@@ -12,6 +12,7 @@ use App\Repository\VacancyRepository;
 use DateTime;
 use DateTimeZone;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 class DataController extends AbstractController
@@ -148,7 +149,8 @@ class DataController extends AbstractController
             $resume_city,
             $resume_vacancy,
             $resume_data->avatar,
-            $resume_data->file
+            $resume_data->file,
+            $resume_data->file_name
         );
         return $resume;
     }
@@ -196,6 +198,7 @@ class DataController extends AbstractController
         $errors_texts = null;
         $is_edit = false;
         $resume = new Resume($cityRepository, $vacancyRepository);
+        $success_message = null;
 
         if($id == null) // если ID не указан - идёт добавление новой записи
         {
@@ -226,6 +229,40 @@ class DataController extends AbstractController
             {
                 $urn .= "/$id";
             }
+
+            $deleteAvatar = $form['deleteAvatar']->getData();
+            if($deleteAvatar && $resume->getAvatar())
+            {
+                $resume->setAvatar(null);
+            }
+            else
+            {
+                $avatarInput = $form['avatar']->getData();
+                if($avatarInput != null)
+                {
+                    $resume->setAvatar(base64_encode(file_get_contents($avatarInput)));
+                }
+            }
+
+            $deleteFile = $form['deleteFile']->getData();
+            if($deleteFile && $resume->getFile())
+            {
+                $resume->setFile(null);
+                $resume->setFileName(null);
+            }
+            else
+            {
+                /**
+                 * @var UploadedFile
+                 */
+                $fileInput = $form['file']->getData();
+                if($fileInput != null)
+                {
+                    $resume->setFile(base64_encode(file_get_contents($fileInput)));
+                    $resume->setFileName($fileInput->getClientOriginalName());
+                }
+            }
+
             $edit_result = $this->getJsonFromApi($urn, $errors_texts, array(
                 'full_name' => $resume->getFullName(),
                 'about' => $resume->getAbout(),
@@ -238,19 +275,29 @@ class DataController extends AbstractController
                 'city_to_work_in_id' => $resume->getCityToWorkIn()->getId(),
                 'desired_vacancy_id' => $resume->getDesiredVacancy()->getId(),
                 'avatar' => $resume->getAvatar(),
-                'file' => $resume->getFile()
+                'file' => $resume->getFile(),
+                'file_name' => $resume->getFileName()
             ));
 
             if(($errors_texts == null) && ($edit_result->data == 'success'))
             {
-                return $this->redirectToRoute('data_list');
+                if($id != null) // Если идёт изменение записи
+                {
+                    $success_message = 'Запись успешно изменена!';
+                }
+                else // Если идёт добавление записи
+                {
+                    return $this->redirectToRoute('data_list');
+                }
             }
         }
 
         return $this->render('data/edit_data.html.twig', [
             'errors_texts' => $errors_texts,
             'is_edit' => $is_edit,
+            'resume' => $resume,
             'form' => $form->createView(),
+            'success_message' => $success_message,
         ]);
     }
 
@@ -289,4 +336,35 @@ class DataController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    public function download_file(CityRepository $cityRepository, VacancyRepository $vacancyRepository, $id)
+    {
+        $resume_data = $this->getJsonFromApi("api/get_data/$id", $errors_texts);
+        if($resume_data != null && $resume_data->errors == null)
+        {
+            $cities = $this->getCitiesFromApi($errors_texts);
+            $vacancies = $this->getVacanciesFromApi($errors_texts);
+            $resume = $this->getResumeFromJsonData($cityRepository, $vacancyRepository, $resume_data->data, $cities, $vacancies);
+            $file = $resume->getFile();
+            if($file != null)
+            {
+                $filename = $resume->getFileName();
+                
+                // Generate response
+                $response = new Response();
+
+                // Set headers
+                $response->headers->set('Cache-Control', 'private');
+                $response->headers->set('Content-Disposition', 'attachment; filename="'.$filename.'";');
+
+                // Send headers before outputting anything
+                $response->sendHeaders();
+
+                $response->setContent(base64_decode($file));
+
+                return $response;
+            }
+        }
+        return new Response('false');
+    } 
 }

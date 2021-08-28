@@ -71,4 +71,10 @@ delete_data:
     controller: App\Controller\DataController::delete_data
     requirements:
         id: '\d+'
+
+download_file:
+    path: /download_file/{id}
+    controller: App\Controller\DataController::download_file
+    requirements:
+        id: '\d+'
 # ===================================================================

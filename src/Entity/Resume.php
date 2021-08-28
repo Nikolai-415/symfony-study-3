@@ -63,14 +63,19 @@ class Resume
     private $desiredVacancy;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      */
     private $avatar;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      */
     private $file;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $fileName;
 
     public function __construct(
         CityRepository $cityRepository,
@@ -85,7 +90,8 @@ class Resume
         City $cityToWorkIn = null,
         Vacancy $desiredVacancy = null,
         string $avatar = null,
-        string $file = null
+        string $file = null,
+        string $fileName = null
     ) {
         $this->id = $id;
         $this   ->setFullName($fullName ?? '')
@@ -97,7 +103,8 @@ class Resume
                 ->setCityToWorkIn($cityToWorkIn ?? $cityRepository->findOneBy(array('id' => 0)))
                 ->setDesiredVacancy($desiredVacancy ?? $vacancyRepository->findOneBy(array('id' => 0)))
                 ->setAvatar($avatar)
-                ->setFile($file);
+                ->setFile($file)
+                ->setFileName($fileName);
     }
 
     public function getId(): ?int
@@ -221,6 +228,18 @@ class Resume
     public function setFile($file): self
     {
         $this->file = $file;
+
+        return $this;
+    }
+
+    public function getFileName(): ?string
+    {
+        return $this->fileName;
+    }
+
+    public function setFileName(?string $fileName): self
+    {
+        $this->fileName = $fileName;
 
         return $this;
     }
