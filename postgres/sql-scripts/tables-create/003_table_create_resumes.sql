@@ -29,7 +29,8 @@ CREATE FUNCTION add_record(
 	IN _city_to_work_in_id 	INT 				DEFAULT 0,
 	IN _desired_vacancy_id	INT 				DEFAULT 0,
 	IN _avatar 				BYTEA				DEFAULT null,
-	IN _file 				BYTEA 				DEFAULT null
+	IN _file 				BYTEA 				DEFAULT null,
+	IN _file_name 			TEXT 				DEFAULT null
 )
 RETURNS VARCHAR(255)
 LANGUAGE 'plpgsql'
@@ -45,7 +46,8 @@ BEGIN
 		city_to_work_in_id,
 		desired_vacancy_id,
 		avatar,
-		file
+		file,
+		file_name
 	) VALUES (
 		_full_name,
 		_about,
@@ -56,7 +58,8 @@ BEGIN
 		_city_to_work_in_id,
 		_desired_vacancy_id,
 		_avatar,
-		_file
+		_file,
+		_file_name
 	);
 	RETURN (SELECT 'success');
 EXCEPTION
@@ -71,17 +74,38 @@ END $$;
 
 DROP FUNCTION IF EXISTS edit_record;
 CREATE FUNCTION edit_record(
-	IN _id					INT,
-	IN _full_name 			VARCHAR(255),
-	IN _about				TEXT,
-	IN _work_experience		INT,
-	IN _desired_salary 		DOUBLE PRECISION,
-	IN _birth_date 			DATE,
-	IN _sending_datetime 	TIMESTAMP,
-	IN _city_to_work_in_id 	INT,
-	IN _desired_vacancy_id	INT,
-	IN _avatar 				BYTEA,
-	IN _file 				BYTEA
+	IN _id						INT,
+
+	IN _is_full_name			BOOLEAN				DEFAULT false,
+	IN _full_name 				VARCHAR(255)		DEFAULT null,
+
+	IN _is_about				BOOLEAN				DEFAULT false,
+	IN _about					TEXT				DEFAULT null,
+
+	IN _is_work_experience		BOOLEAN				DEFAULT false,
+	IN _work_experience			INT					DEFAULT null,
+
+	IN _is_desired_salary		BOOLEAN				DEFAULT false,
+	IN _desired_salary 			DOUBLE PRECISION	DEFAULT null,
+
+	IN _is_birth_date			BOOLEAN				DEFAULT false,
+	IN _birth_date 				DATE				DEFAULT null,
+
+	IN _is_sending_datetime		BOOLEAN				DEFAULT false,
+	IN _sending_datetime 		TIMESTAMP			DEFAULT null,
+
+	IN _is_city_to_work_in_id	BOOLEAN				DEFAULT false,
+	IN _city_to_work_in_id 		INT					DEFAULT null,
+
+	IN _is_desired_vacancy_id	BOOLEAN				DEFAULT false,
+	IN _desired_vacancy_id		INT					DEFAULT null,
+
+	IN _is_avatar				BOOLEAN				DEFAULT false,
+	IN _avatar 					BYTEA				DEFAULT null,
+
+	IN _is_file					BOOLEAN				DEFAULT false,
+	IN _file 					BYTEA				DEFAULT null,
+	IN _file_name 				TEXT				DEFAULT null
 )
 RETURNS VARCHAR(255)
 LANGUAGE 'plpgsql'
@@ -93,19 +117,16 @@ BEGIN
 	IF records_found = 0 THEN
 		RETURN (SELECT ('Запись с ID = ' || _id || ' не найдена!'));
 	ELSE
-		UPDATE resumes
-		SET
-			full_name 			= _full_name,
-			about 				= _about,
-			work_experience 	= _work_experience,
-			desired_salary 		= _desired_salary,
-			birth_date 			= _birth_date,
-			sending_datetime 	= _sending_datetime,
-			city_to_work_in_id 	= _city_to_work_in_id,
-			desired_vacancy_id 	= _desired_vacancy_id,
-			avatar 				= _avatar,
-			file 				= _file
-		WHERE id = _id;
+		IF _is_full_name = true 			THEN 	UPDATE resumes SET full_name = _full_name 						WHERE id = _id; END IF;
+		IF _is_about = true 				THEN 	UPDATE resumes SET about = _about 								WHERE id = _id; END IF;
+		IF _is_work_experience = true 		THEN 	UPDATE resumes SET work_experience = _work_experience 			WHERE id = _id; END IF;
+		IF _is_desired_salary = true 		THEN 	UPDATE resumes SET desired_salary = _desired_salary 			WHERE id = _id; END IF;
+		IF _is_birth_date = true 			THEN 	UPDATE resumes SET birth_date = _birth_date 					WHERE id = _id; END IF;
+		IF _is_sending_datetime = true 		THEN 	UPDATE resumes SET sending_datetime = _sending_datetime 		WHERE id = _id; END IF;
+		IF _is_city_to_work_in_id = true 	THEN 	UPDATE resumes SET city_to_work_in_id = _city_to_work_in_id 	WHERE id = _id; END IF;
+		IF _is_desired_vacancy_id = true 	THEN 	UPDATE resumes SET desired_vacancy_id = _desired_vacancy_id 	WHERE id = _id; END IF;
+		IF _is_avatar = true 				THEN 	UPDATE resumes SET avatar = _avatar 							WHERE id = _id; END IF;
+		IF _is_file = true	 				THEN 	UPDATE resumes SET file = _file, file_name = _file_name			WHERE id = _id; END IF;
 		RETURN (SELECT 'success');
 	END IF;
 EXCEPTION
