@@ -83,23 +83,26 @@ class ApiController extends AbstractController
         return new JsonResponse($json, 200, [], true);
     }
 
-    public function get_data($id, ResumeRepository $resumeRepository): JsonResponse
+    public function get_data($id): JsonResponse
     {
-        $errors = null;
-
-        $resume = $resumeRepository->findOneBy(array('id' => $id));
-        if($resume != null)
-        {
-            $data = $this->getResumeDataAsArray($resume);
-        }
-        else
+        $conn = $this->getDoctrine()->getConnection();
+        $stmt = $conn->prepare('SELECT * FROM get_record(:id);');
+        $stmt->bindParam(':id', $id);
+        $result = $stmt->executeQuery()->fetchAssociative();
+        if($result == false)
         {
             $errors[] = 'Запись не найдена!';
             $data = null;
         }
+        else
+        {
+            $errors = null;
+            $data = $result;
+            if ($data['avatar'] != null) $data['avatar'] = stream_get_contents($data['avatar']);
+            if ($data['file'] != null) $data['file'] = stream_get_contents($data['file']);
+        }
 
         $json = json_encode(array("errors" => $errors, "data" => $data), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT );
-
         return new JsonResponse($json, 200, [], true);
     }
 

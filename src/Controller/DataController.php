@@ -322,7 +322,7 @@ class DataController extends AbstractController
         }
         else
         {
-            return $this->redirectToRoute('edit_data');
+            return $this->redirectToRoute('data_list');
         }
         $form = $this->createForm(DeleteDataFormType::class, $resume);
         $form->handleRequest($request);

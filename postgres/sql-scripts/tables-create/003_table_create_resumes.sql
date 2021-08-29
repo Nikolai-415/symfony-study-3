@@ -18,6 +18,30 @@ CREATE TABLE resumes
     CONSTRAINT fkey_resumes_to_vacancies    FOREIGN KEY(desired_vacancy_id)     REFERENCES vacancies(id)
 );
 
+DROP FUNCTION IF EXISTS get_record;
+CREATE FUNCTION get_record(
+	IN _id					INT
+)
+RETURNS TABLE (
+	id                  	INT,
+	full_name           	VARCHAR(255),
+	about                	TEXT,
+	work_experience      	INT,
+	desired_salary       	DOUBLE PRECISION,
+	birth_date           	DATE,
+	sending_datetime      	TIMESTAMP,
+	city_to_work_in_id    	INT,
+	desired_vacancy_id    	INT,
+	avatar                	BYTEA,
+	file                  	BYTEA,
+	file_name             	VARCHAR(255)
+)
+LANGUAGE 'plpgsql'
+AS $$
+BEGIN
+	RETURN QUERY (SELECT * FROM resumes WHERE resumes.id = _id);
+END $$;
+
 DROP FUNCTION IF EXISTS add_record;
 CREATE FUNCTION add_record(
 	IN _full_name 			VARCHAR(255),
