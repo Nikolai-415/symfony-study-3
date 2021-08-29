@@ -17,3 +17,130 @@ CREATE TABLE resumes
     CONSTRAINT fkey_resumes_to_cities       FOREIGN KEY(city_to_work_in_id)     REFERENCES cities(id),
     CONSTRAINT fkey_resumes_to_vacancies    FOREIGN KEY(desired_vacancy_id)     REFERENCES vacancies(id)
 );
+
+DROP FUNCTION IF EXISTS add_record;
+CREATE FUNCTION add_record(
+	IN _full_name 			VARCHAR(255),
+	IN _about				TEXT,
+	IN _work_experience		INT,
+	IN _desired_salary 		DOUBLE PRECISION,
+	IN _birth_date 			DATE,
+	IN _sending_datetime 	TIMESTAMP 			DEFAULT now(),
+	IN _city_to_work_in_id 	INT 				DEFAULT 0,
+	IN _desired_vacancy_id	INT 				DEFAULT 0,
+	IN _avatar 				BYTEA				DEFAULT null,
+	IN _file 				BYTEA 				DEFAULT null
+)
+RETURNS VARCHAR(255)
+LANGUAGE 'plpgsql'
+AS $$
+BEGIN
+	INSERT INTO resumes(
+		full_name,
+		about,
+		work_experience,
+		desired_salary,
+		birth_date,
+		sending_datetime,
+		city_to_work_in_id,
+		desired_vacancy_id,
+		avatar,
+		file
+	) VALUES (
+		_full_name,
+		_about,
+		_work_experience,
+		_desired_salary,
+		_birth_date,
+		_sending_datetime,
+		_city_to_work_in_id,
+		_desired_vacancy_id,
+		_avatar,
+		_file
+	);
+	RETURN (SELECT 'success');
+EXCEPTION
+	WHEN OTHERS THEN
+		DECLARE
+			error_message VARCHAR(255);
+		BEGIN
+			GET STACKED DIAGNOSTICS error_message = PG_EXCEPTION_DETAIL;
+			RETURN (SELECT error_message);
+		END;
+END $$;
+
+DROP FUNCTION IF EXISTS edit_record;
+CREATE FUNCTION edit_record(
+	IN _id					INT,
+	IN _full_name 			VARCHAR(255),
+	IN _about				TEXT,
+	IN _work_experience		INT,
+	IN _desired_salary 		DOUBLE PRECISION,
+	IN _birth_date 			DATE,
+	IN _sending_datetime 	TIMESTAMP,
+	IN _city_to_work_in_id 	INT,
+	IN _desired_vacancy_id	INT,
+	IN _avatar 				BYTEA,
+	IN _file 				BYTEA
+)
+RETURNS VARCHAR(255)
+LANGUAGE 'plpgsql'
+AS $$
+DECLARE
+	records_found	INT;
+BEGIN
+	records_found = (SELECT count(*) FROM resumes WHERE id = _id);
+	IF records_found = 0 THEN
+		RETURN (SELECT ('Запись с ID = ' || _id || ' не найдена!'));
+	ELSE
+		UPDATE resumes
+		SET
+			full_name 			= _full_name,
+			about 				= _about,
+			work_experience 	= _work_experience,
+			desired_salary 		= _desired_salary,
+			birth_date 			= _birth_date,
+			sending_datetime 	= _sending_datetime,
+			city_to_work_in_id 	= _city_to_work_in_id,
+			desired_vacancy_id 	= _desired_vacancy_id,
+			avatar 				= _avatar,
+			file 				= _file
+		WHERE id = _id;
+		RETURN (SELECT 'success');
+	END IF;
+EXCEPTION
+	WHEN OTHERS THEN
+		DECLARE
+			error_message VARCHAR(255);
+		BEGIN
+			GET STACKED DIAGNOSTICS error_message = PG_EXCEPTION_DETAIL;
+			RETURN (SELECT error_message);
+		END;
+END $$;
+
+DROP FUNCTION IF EXISTS delete_record;
+CREATE FUNCTION delete_record(
+	IN _id					INT
+)
+RETURNS VARCHAR(255)
+LANGUAGE 'plpgsql'
+AS $$
+DECLARE
+	records_found	INT;
+BEGIN
+	records_found = (SELECT count(*) FROM resumes WHERE id = _id);
+	IF records_found = 0 THEN
+		RETURN (SELECT ('Запись с ID = ' || _id || ' не найдена!'));
+	ELSE
+		DELETE FROM resumes	WHERE id = _id;
+		RETURN (SELECT 'success');
+	END IF;
+EXCEPTION
+	WHEN OTHERS THEN
+		DECLARE
+			error_message VARCHAR(255);
+		BEGIN
+			GET STACKED DIAGNOSTICS error_message = PG_EXCEPTION_DETAIL;
+			RETURN (SELECT error_message);
+		END;
+END $$;
