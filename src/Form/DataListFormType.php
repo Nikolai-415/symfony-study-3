@@ -25,17 +25,6 @@ class DataListFormType extends AbstractType
         $sendingDatetimeYears = array();
         for($year = 2000; $year <= 2021; $year++) $sendingDatetimeYears[] = $year;
 
-        $fields = array(
-            'id' => 'ID',
-            'full_name' => 'ФИО',
-            'work_experience' => 'Опыт работы',
-            'desired_salary' => 'Желаемая заработная плата',
-            'birth_date' => 'Дата рождения',
-            'sending_datetime' => 'Дата и время отправки резюме',
-            'city_to_work_in' => 'Выбранный город трудоустройства',
-            'desired_vacancy' => 'Желаемая вакансия',
-        );
-
         $builder
             ->add('isFilter_id', CheckboxType::class)
             ->add('filter_id_from', IntegerType::class)
@@ -81,6 +70,7 @@ class DataListFormType extends AbstractType
                 'choice_label' => 'name',
                 'choice_value' => 'id',
                 'multiple' => true,
+                'expanded' => true,
             ])
             ->add('isFilter_desiredVacancy', CheckboxType::class)
             ->add('filter_desiredVacancy', EntityType::class, [
@@ -90,15 +80,26 @@ class DataListFormType extends AbstractType
                 },
                 'choice_value' => 'id',
                 'multiple' => true,
+                'expanded' => true,
             ])
             
             ->add('sort_field', ChoiceType::class, array(
-                'choices' => $fields,
-                'choice_label' => function ($choice, $key, $value) { return $value; },
+                'choices' => array(
+                    'ID' =>                                 'id',
+                    'ФИО' =>                                'full_name',
+                    'Опыт работы' =>                        'work_experience',
+                    'Желаемая заработная плата' =>          'desired_salary',
+                    'Дата рождения' =>                      'birth_date',
+                    'Дата и время отправки резюме' =>       'sending_datetime',
+                    'Выбранный город трудоустройства' =>    'city_to_work_in',
+                    'Желаемая вакансия' =>                  'desired_vacancy',
+                ),
             ))
             ->add('sort_ascOrDesc', ChoiceType::class, array(
-                'choices' => array('asc' => 'возрастания', 'desc' => 'убывания'),
-                'choice_label' => function ($choice, $key, $value) { return $value; },
+                'choices' => array(
+                    'возрастания' =>    'asc',
+                    'убывания' =>       'desc'
+                ),
             ))
 
             ->add('records_on_page', IntegerType::class)

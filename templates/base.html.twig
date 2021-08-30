@@ -66,9 +66,11 @@
             </div>
             <button class="btn btn-secondary btn-lg" onclick="scrollToTopFunction()" id="buttonScrollToTop">Наверх</button>
         </main>
-        <footer class="text-center mt-4">
+        <footer class="text-center mt-4" id="footer">
             2021 г.
         </footer>
-        <script src="{{ asset('/js/scroll_to_top.js') }}"></script>
+        {% block js_after_footer %}
+            <script src="{{ asset('/js/scroll_to_top.js') }}"></script>
+        {% endblock %}
     </body>
 </html>

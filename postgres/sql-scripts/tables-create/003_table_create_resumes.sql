@@ -18,6 +18,105 @@ CREATE TABLE resumes
     CONSTRAINT fkey_resumes_to_vacancies    FOREIGN KEY(desired_vacancy_id)     REFERENCES vacancies(id)
 );
 
+DROP FUNCTION IF EXISTS get_records;
+CREATE FUNCTION get_records(
+	IN filter_id_from               INT					DEFAULT NULL,
+	IN filter_id_to                 INT					DEFAULT NULL,
+	IN filter_fullName           	VARCHAR(255)		DEFAULT NULL,
+	IN filter_about                	TEXT				DEFAULT NULL,
+	IN filter_workExperience_from   INT					DEFAULT NULL,
+	IN filter_workExperience_to     INT					DEFAULT NULL,
+	IN filter_desiredSalary_from    DOUBLE PRECISION	DEFAULT NULL,
+	IN filter_desiredSalary_to      DOUBLE PRECISION	DEFAULT NULL,
+	IN filter_birthDate_from       	DATE				DEFAULT NULL,
+	IN filter_birthDate_to          DATE				DEFAULT NULL,
+	IN filter_sendingDatetime_from  TIMESTAMP			DEFAULT NULL,
+	IN filter_sendingDatetime_to   	TIMESTAMP			DEFAULT NULL,
+	IN filter_citiesToWorkInIds 	TEXT				DEFAULT NULL,
+	IN filter_desiredVacanciesIds  	TEXT				DEFAULT NULL,
+	IN sort_field           		VARCHAR(255)		DEFAULT 'id',
+	IN sort_ascOrDesc           	VARCHAR(4)			DEFAULT 'asc',
+	IN records_on_page              INT					DEFAULT 20,
+	IN page                  		INT					DEFAULT 1
+)
+RETURNS TABLE (
+	id                  			INT,
+	full_name           			VARCHAR(255),
+	about                			TEXT,
+	work_experience      			INT,
+	desired_salary       			DOUBLE PRECISION,
+	birth_date           			DATE,
+	sending_datetime      			TIMESTAMP,
+	city_to_work_in_id    			INT,
+	desired_vacancy_id    			INT,
+	avatar                			BYTEA,
+	file                  			BYTEA,
+	file_name             			VARCHAR(255)
+)
+LANGUAGE 'plpgsql'
+AS $$
+DECLARE
+	sql_query TEXT;
+BEGIN
+	-- Это первое условие необходимо для того, чтобы WHERE не был пустым при отсутсвии всех условий фильтрации
+	sql_query = 'SELECT * FROM resumes WHERE (TRUE)';
+
+	IF filter_id_from 				is not null THEN
+		sql_query = sql_query || ' AND (resumes.id >= ' || filter_id_from || ')';
+	END IF;
+	IF filter_id_to 				is not null THEN
+		sql_query = sql_query || ' AND (resumes.id <= ' || filter_id_to || ')';
+	END IF;
+
+	IF filter_fullName 				is not null THEN
+		sql_query = sql_query || format(' AND (resumes.full_name LIKE %L)', '%' || filter_fullName || '%');
+	END IF;
+	IF filter_about 				is not null THEN
+		sql_query = sql_query || format(' AND (resumes.about LIKE %L)', '%' || filter_about || '%');
+	END IF;
+
+	IF filter_workExperience_from 	is not null THEN
+		sql_query = sql_query || ' AND (resumes.work_experience >= ' || filter_workExperience_from || ')';
+	END IF;
+	IF filter_workExperience_to 	is not null THEN
+		sql_query = sql_query || ' AND (resumes.work_experience <= ' || filter_workExperience_to || ')';
+	END IF;
+
+	IF filter_desiredSalary_from 	is not null THEN
+		sql_query = sql_query || ' AND (resumes.desired_salary >= ' || filter_desiredSalary_from || ')';
+	END IF;
+	IF filter_desiredSalary_to 		is not null THEN
+		sql_query = sql_query || ' AND (resumes.desired_salary <= ' || filter_desiredSalary_to || ')';
+	END IF;
+
+	IF filter_birthDate_from 		is not null THEN
+		sql_query = sql_query || format(' AND (resumes.birth_date >= %L::date)', filter_birthDate_from);
+	END IF;
+	IF filter_birthDate_to 			is not null THEN
+		sql_query = sql_query || format(' AND (resumes.birth_date <= %L::date)', filter_birthDate_to);
+	END IF;
+
+	IF filter_sendingDatetime_from 	is not null THEN
+		sql_query = sql_query || format(' AND (resumes.sending_datetime >= %L::timestamp)', filter_sendingDatetime_from);
+	END IF;
+	IF filter_sendingDatetime_to 	is not null THEN
+		sql_query = sql_query || format(' AND (resumes.sending_datetime <= %L::timestamp)', filter_sendingDatetime_to);
+	END IF;
+
+	IF filter_citiesToWorkInIds 	is not null THEN
+		sql_query = sql_query || format(' AND (resumes.city_to_work_in_id = ANY (%L))', filter_citiesToWorkInIds);
+	END IF;
+
+	IF filter_desiredVacanciesIds 	is not null THEN
+		sql_query = sql_query || format(' AND (resumes.desired_vacancy_id = ANY (%L))', filter_desiredVacanciesIds);
+	END IF;
+
+	sql_query = sql_query || ' ORDER BY resumes.' || sort_field || ' ' || sort_ascOrDesc;
+	sql_query = sql_query || ' LIMIT ' || records_on_page || ' OFFSET ' || ((page - 1) * records_on_page);
+	sql_query = sql_query || ';';
+	RETURN QUERY EXECUTE sql_query;
+END $$;
+
 DROP FUNCTION IF EXISTS get_record;
 CREATE FUNCTION get_record(
 	IN _id					INT

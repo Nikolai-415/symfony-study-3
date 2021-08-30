@@ -69,17 +69,149 @@ class ApiController extends AbstractController
         );
     }
 
-    public function data_list(ResumeRepository $resumeRepository): JsonResponse
+    public function data_list(Request $request): JsonResponse
     {
-        $data = array();
-        $resumes = $resumeRepository->findAll();
-        foreach ($resumes as $resume)
+        $is_filter_id_from = $request->request->has('filter_id_from');
+        $filter_id_from = $is_filter_id_from ? $request->get('filter_id_from') : null;
+        
+        $is_filter_id_to = $request->request->has('filter_id_to');
+        $filter_id_to = $is_filter_id_to ? $request->get('filter_id_to') : null;
+        
+        $is_filter_fullName = $request->request->has('filter_fullName');
+        $filter_fullName = $is_filter_fullName ? $request->get('filter_fullName') : null;
+        
+        $is_filter_about = $request->request->has('filter_about');
+        $filter_about = $is_filter_about ? $request->get('filter_about') : null;
+        
+        $is_filter_workExperience_from = $request->request->has('filter_workExperience_from');
+        $filter_workExperience_from = $is_filter_workExperience_from ? $request->get('filter_workExperience_from') : null;
+        
+        $is_filter_workExperience_to = $request->request->has('filter_workExperience_to');
+        $filter_workExperience_to = $is_filter_workExperience_to ? $request->get('filter_workExperience_to') : null;
+        
+        $is_filter_desiredSalary_from = $request->request->has('filter_desiredSalary_from');
+        $filter_desiredSalary_from = $is_filter_desiredSalary_from ? $request->get('filter_desiredSalary_from') : null;
+        
+        $is_filter_desiredSalary_to = $request->request->has('filter_desiredSalary_to');
+        $filter_desiredSalary_to = $is_filter_desiredSalary_to ? $request->get('filter_desiredSalary_to') : null;
+        
+        $is_filter_birthDate_from = $request->request->has('filter_birthDate_from');
+        $filter_birthDate_from = $is_filter_birthDate_from ? $request->get('filter_birthDate_from') : null;
+        
+        $is_filter_birthDate_to = $request->request->has('filter_birthDate_to');
+        $filter_birthDate_to = $is_filter_birthDate_to ? $request->get('filter_birthDate_to') : null;
+        
+        $is_filter_sendingDatetime_from = $request->request->has('filter_sendingDatetime_from');
+        $filter_sendingDatetime_from = $is_filter_sendingDatetime_from ? $request->get('filter_sendingDatetime_from') : null;
+        
+        $is_filter_sendingDatetime_to = $request->request->has('filter_sendingDatetime_to');
+        $filter_sendingDatetime_to = $is_filter_sendingDatetime_to ? $request->get('filter_sendingDatetime_to') : null;
+        
+        $is_filter_citiesToWorkInIds = $request->request->has('filter_citiesToWorkInIds');
+        $filter_citiesToWorkInIds = null;
+        if($is_filter_citiesToWorkInIds)
         {
-            $data[] = $this->getResumeDataAsArray($resume);
+            $filter_citiesToWorkInIds_array = $request->get('filter_citiesToWorkInIds');
+            $filter_citiesToWorkInIds = '{';
+            $is_first = true;
+            foreach($filter_citiesToWorkInIds_array as $element)
+            {
+                if($is_first == false)
+                {
+                    $filter_citiesToWorkInIds .= ',';
+                }
+                $filter_citiesToWorkInIds .= $element;
+                $is_first = false;
+            }
+            $filter_citiesToWorkInIds .= '}';
         }
+        
+        $is_filter_desiredVacanciesIds = $request->request->has('filter_desiredVacanciesIds');
+        $filter_desiredVacanciesIds = null;
+        if($is_filter_desiredVacanciesIds)
+        {
+            $filter_desiredVacanciesIds_array = $request->get('filter_desiredVacanciesIds');
+            $filter_desiredVacanciesIds = '{';
+            $is_first = true;
+            foreach($filter_desiredVacanciesIds_array as $element)
+            {
+                if($is_first == false)
+                {
+                    $filter_desiredVacanciesIds .= ',';
+                }
+                $filter_desiredVacanciesIds .= $element;
+                $is_first = false;
+            }
+            $filter_desiredVacanciesIds .= '}';
+        }
+        
+        $is_sort_field = $request->request->has('sort_field');
+        $sort_field = $is_sort_field ? $request->get('sort_field') : 'id';
+        
+        $is_sort_ascOrDesc = $request->request->has('sort_ascOrDesc');
+        $sort_ascOrDesc = $is_sort_ascOrDesc ? $request->get('sort_ascOrDesc') : 'asc';
+        
+        $is_records_on_page = $request->request->has('records_on_page');
+        $records_on_page = $is_records_on_page ? $request->get('records_on_page') : 20;
+        
+        $is_page = $request->request->has('page');
+        $page = $is_page ? $request->get('page') : 1;
+
+        $conn = $this->getDoctrine()->getConnection();
+        $stmt = $conn->prepare('SELECT * FROM get_records(
+            :filter_id_from,
+            :filter_id_to,
+            :filter_fullName,
+            :filter_about,
+            :filter_workExperience_from,
+            :filter_workExperience_to,
+            :filter_desiredSalary_from,
+            :filter_desiredSalary_to,
+            :filter_birthDate_from,
+            :filter_birthDate_to,
+            :filter_sendingDatetime_from,
+            :filter_sendingDatetime_to,
+            :filter_citiesToWorkInIds,
+            :filter_desiredVacanciesIds,
+            :sort_field,
+            :sort_ascOrDesc,
+            :records_on_page,
+            :page
+        );');
+        $stmt->bindParam(':filter_id_from'              , $filter_id_from);
+        $stmt->bindParam(':filter_id_to'                , $filter_id_to);
+        $stmt->bindParam(':filter_fullName'             , $filter_fullName);
+        $stmt->bindParam(':filter_about'                , $filter_about);
+        $stmt->bindParam(':filter_workExperience_from'  , $filter_workExperience_from);
+        $stmt->bindParam(':filter_workExperience_to'    , $filter_workExperience_to);
+        $stmt->bindParam(':filter_desiredSalary_from'   , $filter_desiredSalary_from);
+        $stmt->bindParam(':filter_desiredSalary_to'     , $filter_desiredSalary_to);
+        $stmt->bindParam(':filter_birthDate_from'       , $filter_birthDate_from);
+        $stmt->bindParam(':filter_birthDate_to'         , $filter_birthDate_to);
+        $stmt->bindParam(':filter_sendingDatetime_from' , $filter_sendingDatetime_from);
+        $stmt->bindParam(':filter_sendingDatetime_to'   , $filter_sendingDatetime_to);
+        $stmt->bindParam(':filter_citiesToWorkInIds'    , $filter_citiesToWorkInIds);
+        $stmt->bindParam(':filter_desiredVacanciesIds'  , $filter_desiredVacanciesIds);
+        $stmt->bindParam(':sort_field'                  , $sort_field);
+        $stmt->bindParam(':sort_ascOrDesc'              , $sort_ascOrDesc);
+        $stmt->bindParam(':records_on_page'             , $records_on_page);
+        $stmt->bindParam(':page'                        , $page);
+        $results = $stmt->executeQuery()->fetchAll();
+        if($results == false)
+        {
+            $data = null;
+        }
+        else
+        {
+            foreach ($results as $result)
+            {
+                if ($result['avatar'] != null) $result['avatar'] = stream_get_contents($result['avatar']);
+                if ($result['file'] != null) $result['file'] = stream_get_contents($result['file']);
+            }
+        }
+        $data = $results;
 
         $json = json_encode(array("data" => $data), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT );
-
         return new JsonResponse($json, 200, [], true);
     }
 

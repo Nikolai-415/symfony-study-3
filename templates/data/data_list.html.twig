@@ -7,23 +7,24 @@
     <script>
         function showFormSortAndOrder() {
             var form = document.getElementById("data_list_form");
+            var button = document.getElementById("buttonFormSortAndOrder");
             form.style.display = "block";
-            var formSubmit = document.getElementById("data_list_form_submit");
-            formSubmit.scrollIntoView({
-                behavior: 'smooth'
-            });
+            button.innerText = "Скрыть форму фильтрации и сортировки";
+            var footer = document.getElementById("footer");
+            footer.scrollIntoView();
         }
         function showOrHideFormSortAndOrder() {
             var form = document.getElementById("data_list_form");
+            var button = document.getElementById("buttonFormSortAndOrder");
             if (form.style.display === "none") {
                 form.style.display = "block";
+                button.innerText = "Скрыть форму фильтрации и сортировки";
+                var footer = document.getElementById("footer");
+                footer.scrollIntoView();
             } else {
                 form.style.display = "none";
+                button.innerText = "Показать форму фильтрации и сортировки";
             }
-            var formSubmit = document.getElementById("data_list_form_submit");
-            formSubmit.scrollIntoView({
-                behavior: 'smooth'
-            });
         }
     </script>
 {% endblock %}
@@ -66,8 +67,8 @@
                         <td>{{ (resume.getAbout() ?? '') == '' ? 'Нет информации' : resume.getAbout() }}</td>
                         <td>{{ resume.getWorkExperience() }}</td>
                         <td>{{ resume.getDesiredSalary() }}</td>
-                        <td>{{ resume.getBirthDate().format('d.m.Y') }}</td>
-                        <td>{{ resume.getSendingDatetime().format('d.m.Y H:i:s') }}</td>
+                        <td>{{ resume.getBirthDate().format('Y-m-d') }}</td>
+                        <td>{{ resume.getSendingDatetime().format('Y-m-d H:i:s') }}</td>
                         <td>{{ resume.getCityToWorkIn().getName() }}</td>
                         <td>{{ resume.getDesiredVacancy().getName() }}</td>
                         <td>
@@ -102,15 +103,18 @@
                 {% endfor %}
             {% else %}
                 <tr>
-                    <td colspan="13">Нет резюме!</td>
+                    <td colspan="13">
+                        {% if is_form_used %}
+                            По выбранным настройкам фильтрации и паджинации резюме не найдены!
+                        {% else %}
+                            Нет резюме!
+                        {% endif %}
+                    </td>
                 </tr>
             {% endif %}
         </tbody>
     </table>
 
-    <button class="btn btn-primary mb-2" onclick="showOrHideFormSortAndOrder()">
-        Фильтрация и сортировка
-    </button>
     {{ form_start(form, {
             attr: { class: 'w-75 mx-auto', style: 'display: none;', id: 'data_list_form' },
     })}}
@@ -139,7 +143,6 @@
             {{ form_row(form.filter_fullName, {
                     row_attr: { class: 'input-group col p-0' },
                     label: 'содержит',
-                    attr: { placeholder: 'Текст' },
             })}}
         </div>
         <div class="row m-0">
@@ -150,7 +153,6 @@
             {{ form_row(form.filter_about, {
                     row_attr: { class: 'input-group col p-0' },
                     label: 'содержит',
-                    attr: { placeholder: 'Текст' },
             })}}
         </div>
         <div class="row m-0">
@@ -178,12 +180,12 @@
             {{ form_row(form.filter_desiredSalary_from, {
                     row_attr: { class: 'input-group col p-0' },
                     label: 'от',
-                    attr: { placeholder: 10000 },
+                    attr: { placeholder: 30000 },
             })}}
             {{ form_row(form.filter_desiredSalary_to, {
                     row_attr: { class: 'input-group col p-0' },
                     label: 'до',
-                    attr: { placeholder: 30000 },
+                    attr: { placeholder: 50000 },
             })}}
             <label class="input-group-text col">рублей (включительно)</label>
         </div>
@@ -229,8 +231,9 @@
                     label: 'Город трудоустройства',
             })}}
             {{ form_row(form.filter_cityToWorkIn, {
-                    row_attr: { class: 'input-group col p-0' },
+                    row_attr: { class: 'input-group col p-2 scrollable form-control' },
                     label_attr: { hidden: true },
+                    attr: { class: 'checkboxLine' },
             })}}
         </div>
         <div class="row m-0">
@@ -239,8 +242,9 @@
                     label: 'Вакансия',
             })}}
             {{ form_row(form.filter_desiredVacancy, {
-                    row_attr: { class: 'input-group col p-0' },
+                    row_attr: { class: 'input-group col p-2 scrollable form-control' },
                     label_attr: { hidden: true },
+                    attr: { class: 'checkboxLine' },
             })}}
         </div>
         <div class="row m-0 mt-2">
@@ -274,4 +278,16 @@
                 row_attr: { class: 'my-2' },
         })}}
     {{ form_end(form) }}
+    <button class="btn btn-info mt-2" onclick="showOrHideFormSortAndOrder()" id="buttonFormSortAndOrder">
+        Показать форму фильтрации и сортировки
+    </button>
+{% endblock %}
+
+{% block js_after_footer %}
+    {{ parent() }}
+    {% if is_form_used %}
+        <script>
+            document.onload = showFormSortAndOrder();
+        </script>
+    {% endif %}
 {% endblock %}

@@ -10,3 +10,12 @@
     left: 20px; /* Отступ слева */
     z-index: 99; /* Отображение поверх всех элементов */
 }
+
+.scrollable {
+    height: 150px;
+    overflow-y: scroll;
+}
+
+.checkboxLine {
+    text-align: left;
+}

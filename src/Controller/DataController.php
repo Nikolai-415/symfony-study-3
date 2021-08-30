@@ -11,7 +11,7 @@ use App\Form\EditDataFormType;
 use App\Repository\CityRepository;
 use App\Repository\VacancyRepository;
 use DateTime;
-use DateTimeZone;
+use stdClass;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,7 +43,7 @@ class DataController extends AbstractController
                     $curlHandle,
                     array (
                         CURLOPT_POST => 1,
-                        CURLOPT_POSTFIELDS => $post_fields
+                        CURLOPT_POSTFIELDS => http_build_query($post_fields)
                     )
                 );
             }
@@ -80,7 +80,6 @@ class DataController extends AbstractController
      */
     private function getCitiesFromApi(&$errors_texts = array())
     {
-        // Работаю не напрямую с БД, а с созданным API просто для того, чтобы показать, как, к примеру, я бы обрабатывал API извне (классы моделей тоже бы использовал)
         $cities_list = $this->getJsonFromApi("api/cities_list", $errors_texts);
 
         /**
@@ -107,7 +106,6 @@ class DataController extends AbstractController
      */
     private function getVacanciesFromApi(&$errors_texts = array())
     {
-        // Работаю не напрямую с БД, а с созданным API просто для того, чтобы показать, как, к примеру, я бы обрабатывал API извне (классы моделей тоже бы использовал)
         $vacancies_list = $this->getJsonFromApi("api/vacancies_list", $errors_texts);
 
         /**
@@ -159,10 +157,9 @@ class DataController extends AbstractController
     /**
      * @return Resume[]
      */
-    private function getResumesFromApi(CityRepository $cityRepository, VacancyRepository $vacancyRepository, &$cities, &$vacancies, &$errors_texts = array())
+    private function getResumesFromApi(CityRepository $cityRepository, VacancyRepository $vacancyRepository, &$cities, &$vacancies, &$errors_texts = array(), $post_fields = null)
     {
-        // Работаю не напрямую с БД, а с созданным API просто для того, чтобы показать, как, к примеру, я бы обрабатывал API извне (классы моделей тоже бы использовал)
-        $data_list = $this->getJsonFromApi("api/data_list", $errors_texts);
+        $data_list = $this->getJsonFromApi("api/data_list", $errors_texts, $post_fields);
         
         /**
          * @var Resume[]
@@ -181,15 +178,119 @@ class DataController extends AbstractController
     }
 
     public function data_list(CityRepository $cityRepository, VacancyRepository $vacancyRepository, Request $request): Response
-    {        
+    {
         $cities = $this->getCitiesFromApi($errors_texts);
         $vacancies = $this->getVacanciesFromApi($errors_texts);
-        $resumes = $this->getResumesFromApi($cityRepository, $vacancyRepository, $cities, $vacancies, $errors_texts);
 
         $form = $this->createForm(DataListFormType::class);
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            // ...
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            // Поля для передачи в API
+            $post_fields = new stdClass();
+            
+            // Получение данных формы и присвоение значений по умолчанию в случае, если данные не введены
+            $isFilter_id = $form['isFilter_id']->getData();
+            if($isFilter_id)
+            {
+                $post_fields->filter_id_from                = $form['filter_id_from']->getData()                ?? 0;
+                $post_fields->filter_id_to                  = $form['filter_id_to']->getData()                  ?? 100;
+            }
+            
+            $isFilter_fullName = $form['isFilter_fullName']->getData();
+            if($isFilter_fullName)
+            {
+                $post_fields->filter_fullName               = $form['filter_fullName']->getData();
+            }
+
+            $isFilter_about = $form['isFilter_about']->getData();
+            if($isFilter_about)
+            {
+                $post_fields->filter_about                  = $form['filter_about']->getData();
+            }
+
+            $isFilter_workExperience = $form['isFilter_workExperience']->getData();
+            if($isFilter_workExperience)
+            {
+                $post_fields->filter_workExperience_from    = $form['filter_workExperience_from']->getData()    ?? 5;
+                $post_fields->filter_workExperience_to      = $form['filter_workExperience_to']->getData()      ?? 10;
+            }
+
+            $isFilter_desiredSalary = $form['isFilter_desiredSalary']->getData();
+            if($isFilter_desiredSalary)
+            {
+                $post_fields->filter_desiredSalary_from     = $form['filter_desiredSalary_from']->getData()     ?? 30000;
+                $post_fields->filter_desiredSalary_to       = $form['filter_desiredSalary_to']->getData()       ?? 50000;
+            }
+
+            $isFilter_birthDate = $form['isFilter_birthDate']->getData();
+            if($isFilter_birthDate)
+            {
+                $post_fields->filter_birthDate_from         = $form['filter_birthDate_from']->getData()->format('Y-m-d');
+                $post_fields->filter_birthDate_to           = $form['filter_birthDate_to']->getData()->format('Y-m-d');
+            }
+
+            $isFilter_sendingDatetime = $form['isFilter_sendingDatetime']->getData();
+            if($isFilter_sendingDatetime)
+            {
+                $post_fields->filter_sendingDatetime_from   = $form['filter_sendingDatetime_from']->getData()->format('Y-m-d H:i:s');
+                $post_fields->filter_sendingDatetime_to     = $form['filter_sendingDatetime_to']->getData()->format('Y-m-d H:i:s');
+            }
+
+            $isFilter_cityToWorkIn = $form['isFilter_cityToWorkIn']->getData();
+            if($isFilter_cityToWorkIn)
+            {
+                $filter_citiesToWorkInIds = array();
+                foreach($form['filter_cityToWorkIn']->getData() as $element)
+                {
+                    $filter_citiesToWorkInIds[] = $element->getId();
+                }
+                
+                // Добавление в массив несуществующего ID для того, чтобы
+                // функция http_build_query(...) не проигнорировала пустой
+                // массив и передала-таки его в API
+                if(count($filter_citiesToWorkInIds) == 0)
+                {
+                    $filter_citiesToWorkInIds[] = -1;
+                }
+
+                $post_fields->filter_citiesToWorkInIds      = $filter_citiesToWorkInIds;
+            }
+
+            $isFilter_desiredVacancy = $form['isFilter_desiredVacancy']->getData();
+            if($isFilter_desiredVacancy)
+            {
+                $filter_desiredVacanciesIds = array();
+                foreach($form['filter_desiredVacancy']->getData() as $element)
+                {
+                    $filter_desiredVacanciesIds[] = $element->getId();
+                }
+                
+                // Добавление в массив несуществующего ID для того, чтобы
+                // функция http_build_query(...) не проигнорировала пустой
+                // массив и передала-таки его в API
+                if(count($filter_desiredVacanciesIds) == 0)
+                {
+                    $filter_desiredVacanciesIds[] = -1;
+                }
+
+                $post_fields->filter_desiredVacanciesIds    = $filter_desiredVacanciesIds;
+            }
+
+            $post_fields->sort_field                        = $form['sort_field']->getData();
+            $post_fields->sort_ascOrDesc                    = $form['sort_ascOrDesc']->getData();
+
+            $post_fields->records_on_page                   = $form['records_on_page']->getData()               ?? 20;
+            $post_fields->page                              = $form['page']->getData()                          ?? 1;
+
+            $resumes = $this->getResumesFromApi($cityRepository, $vacancyRepository, $cities, $vacancies, $errors_texts, $post_fields);
+
+            $is_form_used = true;
+        }
+        else
+        {
+            $resumes = $this->getResumesFromApi($cityRepository, $vacancyRepository, $cities, $vacancies, $errors_texts);
+            $is_form_used = false;
         }
 
         return $this->render('data/data_list.html.twig', [
@@ -197,7 +298,8 @@ class DataController extends AbstractController
             'cities' => $cities,
             'vacancies' => $vacancies,
             'resumes' => $resumes,
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'is_form_used' => $is_form_used,
         ]);
     }
 
