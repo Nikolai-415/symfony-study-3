@@ -31,8 +31,10 @@ api_vacancies_list:
     controller: App\Controller\ApiController::vacancies_list
 
 api_data_list:
-    path: /api/data_list
+    path: /api/data_list/{page?}
     controller: App\Controller\ApiController::data_list
+    requirements:
+        id: '\d+'
 
 api_get_data:
     path: /api/get_data/{id}
@@ -57,8 +59,10 @@ api_delete_data:
 # Client - работа с записями
 # ===================================================================
 data_list:
-    path: /data_list
+    path: /data_list/{page?}
     controller: App\Controller\DataController::data_list
+    requirements:
+        id: '\d+'
 
 edit_data:
     path: /edit_data/{id?}

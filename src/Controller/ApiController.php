@@ -4,11 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Resume;
 use App\Repository\CityRepository;
-use App\Repository\ResumeRepository;
 use App\Repository\VacancyRepository;
-use DateTime;
-use DateTimeZone;
 use PDO;
+use stdClass;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -51,25 +49,7 @@ class ApiController extends AbstractController
         return new JsonResponse($json, 200, [], true);
     }
 
-    private function getResumeDataAsArray(Resume $resume)
-    {
-        return array(
-            'id' => $resume->getId(),
-            'full_name' => $resume->getFullName(),
-            'about' => $resume->getAbout(),
-            'work_experience' => $resume->getWorkExperience(),
-            'desired_salary' => $resume->getDesiredSalary(),
-            'birth_date' => $resume->getBirthDate()->format('Y-m-d'),
-            'sending_datetime' => $resume->getSendingDatetime()->format('Y-m-d H:i:s.u'),
-            'city_to_work_in_id' => $resume->getCityToWorkIn()->getId(),
-            'desired_vacancy_id' => $resume->getDesiredVacancy()->getId(),
-            'avatar' => $resume->getAvatar(),
-            'file' => $resume->getFile(),
-            'file_name' => $resume->getFileName()
-        );
-    }
-
-    public function data_list(Request $request): JsonResponse
+    public function data_list(Request $request, $page = 1): JsonResponse
     {
         $is_filter_id_from = $request->request->has('filter_id_from');
         $filter_id_from = $is_filter_id_from ? $request->get('filter_id_from') : null;
@@ -154,11 +134,8 @@ class ApiController extends AbstractController
         $is_records_on_page = $request->request->has('records_on_page');
         $records_on_page = $is_records_on_page ? $request->get('records_on_page') : 20;
         
-        $is_page = $request->request->has('page');
-        $page = $is_page ? $request->get('page') : 1;
-
         $conn = $this->getDoctrine()->getConnection();
-        $stmt = $conn->prepare('SELECT * FROM get_records(
+        $sql_params = '(
             :filter_id_from,
             :filter_id_to,
             :filter_fullName,
@@ -177,39 +154,50 @@ class ApiController extends AbstractController
             :sort_ascOrDesc,
             :records_on_page,
             :page
-        );');
-        $stmt->bindParam(':filter_id_from'              , $filter_id_from);
-        $stmt->bindParam(':filter_id_to'                , $filter_id_to);
-        $stmt->bindParam(':filter_fullName'             , $filter_fullName);
-        $stmt->bindParam(':filter_about'                , $filter_about);
-        $stmt->bindParam(':filter_workExperience_from'  , $filter_workExperience_from);
-        $stmt->bindParam(':filter_workExperience_to'    , $filter_workExperience_to);
-        $stmt->bindParam(':filter_desiredSalary_from'   , $filter_desiredSalary_from);
-        $stmt->bindParam(':filter_desiredSalary_to'     , $filter_desiredSalary_to);
-        $stmt->bindParam(':filter_birthDate_from'       , $filter_birthDate_from);
-        $stmt->bindParam(':filter_birthDate_to'         , $filter_birthDate_to);
-        $stmt->bindParam(':filter_sendingDatetime_from' , $filter_sendingDatetime_from);
-        $stmt->bindParam(':filter_sendingDatetime_to'   , $filter_sendingDatetime_to);
-        $stmt->bindParam(':filter_citiesToWorkInIds'    , $filter_citiesToWorkInIds);
-        $stmt->bindParam(':filter_desiredVacanciesIds'  , $filter_desiredVacanciesIds);
-        $stmt->bindParam(':sort_field'                  , $sort_field);
-        $stmt->bindParam(':sort_ascOrDesc'              , $sort_ascOrDesc);
-        $stmt->bindParam(':records_on_page'             , $records_on_page);
-        $stmt->bindParam(':page'                        , $page);
-        $results = $stmt->executeQuery()->fetchAll();
-        if($results == false)
+        )';
+        $statements = array(
+            'resumes' => $stmt = $conn->prepare("SELECT * FROM get_records $sql_params;"),
+            'pages_number' => $stmt = $conn->prepare("SELECT * FROM get_records_pages_number $sql_params;")
+        );
+        foreach($statements as $stmt)
         {
-            $data = null;
+            $stmt->bindParam(':filter_id_from'              , $filter_id_from);
+            $stmt->bindParam(':filter_id_to'                , $filter_id_to);
+            $stmt->bindParam(':filter_fullName'             , $filter_fullName);
+            $stmt->bindParam(':filter_about'                , $filter_about);
+            $stmt->bindParam(':filter_workExperience_from'  , $filter_workExperience_from);
+            $stmt->bindParam(':filter_workExperience_to'    , $filter_workExperience_to);
+            $stmt->bindParam(':filter_desiredSalary_from'   , $filter_desiredSalary_from);
+            $stmt->bindParam(':filter_desiredSalary_to'     , $filter_desiredSalary_to);
+            $stmt->bindParam(':filter_birthDate_from'       , $filter_birthDate_from);
+            $stmt->bindParam(':filter_birthDate_to'         , $filter_birthDate_to);
+            $stmt->bindParam(':filter_sendingDatetime_from' , $filter_sendingDatetime_from);
+            $stmt->bindParam(':filter_sendingDatetime_to'   , $filter_sendingDatetime_to);
+            $stmt->bindParam(':filter_citiesToWorkInIds'    , $filter_citiesToWorkInIds);
+            $stmt->bindParam(':filter_desiredVacanciesIds'  , $filter_desiredVacanciesIds);
+            $stmt->bindParam(':sort_field'                  , $sort_field);
+            $stmt->bindParam(':sort_ascOrDesc'              , $sort_ascOrDesc);
+            $stmt->bindParam(':records_on_page'             , $records_on_page);
+            $stmt->bindParam(':page'                        , $page);
+        }
+        $resumes = $statements['resumes']->executeQuery()->fetchAll();
+        $pages_number = $statements['pages_number']->executeQuery()->fetchAssociative()['pages_number'];
+
+        $data = new stdClass();
+        if($resumes == null)
+        {
+            $data->resumes = null;
         }
         else
         {
-            foreach ($results as $result)
+            foreach ($resumes as $result)
             {
                 if ($result['avatar'] != null) $result['avatar'] = stream_get_contents($result['avatar']);
                 if ($result['file'] != null) $result['file'] = stream_get_contents($result['file']);
             }
+            $data->resumes = $resumes;
         }
-        $data = $results;
+        $data->pages_number = $pages_number;
 
         $json = json_encode(array("data" => $data), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT );
         return new JsonResponse($json, 200, [], true);

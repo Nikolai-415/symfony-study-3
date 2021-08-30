@@ -154,41 +154,51 @@ class DataController extends AbstractController
         return $resume;
     }
 
-    /**
-     * @return Resume[]
-     */
-    private function getResumesFromApi(CityRepository $cityRepository, VacancyRepository $vacancyRepository, &$cities, &$vacancies, &$errors_texts = array(), $post_fields = null)
+    private function getResumesAndPagesNumberFromApi($page, CityRepository $cityRepository, VacancyRepository $vacancyRepository, &$cities, &$vacancies, &$errors_texts = array(), $post_fields = null)
     {
-        $data_list = $this->getJsonFromApi("api/data_list", $errors_texts, $post_fields);
+        $data_list = $this->getJsonFromApi("api/data_list/$page", $errors_texts, $post_fields);
         
-        /**
-         * @var Resume[]
-         */
-        $resumes = array();
+        $resumes_and_pages_number = new stdClass();
+        $resumes_and_pages_number->resumes = array();
+        $resumes_and_pages_number->pages_number = 0;
         if($data_list != null)
         {
-            foreach($data_list->data as $resume_data)
+            /**
+             * @var Resume[]
+             */
+            $resumes = array();
+            if($data_list->data->resumes != null)
             {
-                $resume = $this->getResumeFromJsonData($cityRepository, $vacancyRepository, $resume_data, $cities, $vacancies);
-                $resumes[$resume_data->id] = $resume;
+                foreach($data_list->data->resumes as $resume_data)
+                {
+                    $resume = $this->getResumeFromJsonData($cityRepository, $vacancyRepository, $resume_data, $cities, $vacancies);
+                    $resumes[$resume_data->id] = $resume;
+                }
             }
+            $resumes_and_pages_number->resumes = $resumes;
+            $resumes_and_pages_number->pages_number = $data_list->data->pages_number;
         }
 
-        return $resumes;
+        return $resumes_and_pages_number;
     }
 
-    public function data_list(CityRepository $cityRepository, VacancyRepository $vacancyRepository, Request $request): Response
+    public function data_list(CityRepository $cityRepository, VacancyRepository $vacancyRepository, Request $request, $page = null): Response
     {
+        if($page == null || $page < 1)
+        {
+            return $this->redirectToRoute('data_list', array('page' => 1));
+        }
+
         $cities = $this->getCitiesFromApi($errors_texts);
         $vacancies = $this->getVacanciesFromApi($errors_texts);
 
-        $form = $this->createForm(DataListFormType::class);
+        $form = $this->createForm(DataListFormType::class, null, array('method' => 'GET', 'action' => $this->generateUrl('data_list', array('page' => 1))));
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid())
         {
             // Поля для передачи в API
             $post_fields = new stdClass();
-            
+
             // Получение данных формы и присвоение значений по умолчанию в случае, если данные не введены
             $isFilter_id = $form['isFilter_id']->getData();
             if($isFilter_id)
@@ -281,16 +291,25 @@ class DataController extends AbstractController
             $post_fields->sort_ascOrDesc                    = $form['sort_ascOrDesc']->getData();
 
             $post_fields->records_on_page                   = $form['records_on_page']->getData()               ?? 20;
-            $post_fields->page                              = $form['page']->getData()                          ?? 1;
 
-            $resumes = $this->getResumesFromApi($cityRepository, $vacancyRepository, $cities, $vacancies, $errors_texts, $post_fields);
+            $resumes_and_pages_number = $this->getResumesAndPagesNumberFromApi($page, $cityRepository, $vacancyRepository, $cities, $vacancies, $errors_texts, $post_fields);
+            $resumes = $resumes_and_pages_number->resumes;
+            $pages_number = $resumes_and_pages_number->pages_number;
 
             $is_form_used = true;
         }
         else
         {
-            $resumes = $this->getResumesFromApi($cityRepository, $vacancyRepository, $cities, $vacancies, $errors_texts);
+            $resumes_and_pages_number = $this->getResumesAndPagesNumberFromApi($page, $cityRepository, $vacancyRepository, $cities, $vacancies, $errors_texts);
+            $resumes = $resumes_and_pages_number->resumes;
+            $pages_number = $resumes_and_pages_number->pages_number;
+
             $is_form_used = false;
+
+            if($page > $pages_number && $pages_number != 0)
+            {
+                return $this->redirectToRoute('data_list', array('page' => $pages_number));
+            }
         }
 
         return $this->render('data/data_list.html.twig', [
@@ -300,6 +319,9 @@ class DataController extends AbstractController
             'resumes' => $resumes,
             'form' => $form->createView(),
             'is_form_used' => $is_form_used,
+            'current_page' => $page,
+            'pages_number' => $pages_number,
+            'pages_at_side' => 3,
         ]);
     }
 

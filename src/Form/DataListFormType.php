@@ -103,7 +103,6 @@ class DataListFormType extends AbstractType
             ))
 
             ->add('records_on_page', IntegerType::class)
-            ->add('page', IntegerType::class)
 
             ->add('submit', SubmitType::class)
         ;

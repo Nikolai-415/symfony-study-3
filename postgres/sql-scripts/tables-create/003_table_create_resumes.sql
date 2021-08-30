@@ -18,8 +18,8 @@ CREATE TABLE resumes
     CONSTRAINT fkey_resumes_to_vacancies    FOREIGN KEY(desired_vacancy_id)     REFERENCES vacancies(id)
 );
 
-DROP FUNCTION IF EXISTS get_records;
-CREATE FUNCTION get_records(
+DROP FUNCTION IF EXISTS generate_where;
+CREATE FUNCTION generate_where(
 	IN filter_id_from               INT					DEFAULT NULL,
 	IN filter_id_to                 INT					DEFAULT NULL,
 	IN filter_fullName           	VARCHAR(255)		DEFAULT NULL,
@@ -39,27 +39,14 @@ CREATE FUNCTION get_records(
 	IN records_on_page              INT					DEFAULT 20,
 	IN page                  		INT					DEFAULT 1
 )
-RETURNS TABLE (
-	id                  			INT,
-	full_name           			VARCHAR(255),
-	about                			TEXT,
-	work_experience      			INT,
-	desired_salary       			DOUBLE PRECISION,
-	birth_date           			DATE,
-	sending_datetime      			TIMESTAMP,
-	city_to_work_in_id    			INT,
-	desired_vacancy_id    			INT,
-	avatar                			BYTEA,
-	file                  			BYTEA,
-	file_name             			VARCHAR(255)
-)
+RETURNS TEXT
 LANGUAGE 'plpgsql'
 AS $$
 DECLARE
 	sql_query TEXT;
 BEGIN
-	-- Это первое условие необходимо для того, чтобы WHERE не был пустым при отсутсвии всех условий фильтрации
-	sql_query = 'SELECT * FROM resumes WHERE (TRUE)';
+	-- Первое условие WHERE необходимо для того, чтобы WHERE не был пустым при отсутсвии всех условий фильтрации
+	sql_query = ' WHERE (TRUE)';
 
 	IF filter_id_from 				is not null THEN
 		sql_query = sql_query || ' AND (resumes.id >= ' || filter_id_from || ')';
@@ -111,9 +98,126 @@ BEGIN
 		sql_query = sql_query || format(' AND (resumes.desired_vacancy_id = ANY (%L))', filter_desiredVacanciesIds);
 	END IF;
 
+	RETURN sql_query;
+END $$;
+
+DROP FUNCTION IF EXISTS get_records;
+CREATE FUNCTION get_records(
+	IN filter_id_from               INT					DEFAULT NULL,
+	IN filter_id_to                 INT					DEFAULT NULL,
+	IN filter_fullName           	VARCHAR(255)		DEFAULT NULL,
+	IN filter_about                	TEXT				DEFAULT NULL,
+	IN filter_workExperience_from   INT					DEFAULT NULL,
+	IN filter_workExperience_to     INT					DEFAULT NULL,
+	IN filter_desiredSalary_from    DOUBLE PRECISION	DEFAULT NULL,
+	IN filter_desiredSalary_to      DOUBLE PRECISION	DEFAULT NULL,
+	IN filter_birthDate_from       	DATE				DEFAULT NULL,
+	IN filter_birthDate_to          DATE				DEFAULT NULL,
+	IN filter_sendingDatetime_from  TIMESTAMP			DEFAULT NULL,
+	IN filter_sendingDatetime_to   	TIMESTAMP			DEFAULT NULL,
+	IN filter_citiesToWorkInIds 	TEXT				DEFAULT NULL,
+	IN filter_desiredVacanciesIds  	TEXT				DEFAULT NULL,
+	IN sort_field           		VARCHAR(255)		DEFAULT 'id',
+	IN sort_ascOrDesc           	VARCHAR(4)			DEFAULT 'asc',
+	IN records_on_page              INT					DEFAULT 20,
+	IN page                  		INT					DEFAULT 1
+)
+RETURNS TABLE (
+	id                  			INT,
+	full_name           			VARCHAR(255),
+	about                			TEXT,
+	work_experience      			INT,
+	desired_salary       			DOUBLE PRECISION,
+	birth_date           			DATE,
+	sending_datetime      			TIMESTAMP,
+	city_to_work_in_id    			INT,
+	desired_vacancy_id    			INT,
+	avatar                			BYTEA,
+	file                  			BYTEA,
+	file_name             			VARCHAR(255)
+)
+LANGUAGE 'plpgsql'
+AS $$
+DECLARE
+	sql_query TEXT;
+BEGIN
+	-- Первое условие WHERE необходимо для того, чтобы WHERE не был пустым при отсутсвии всех условий фильтрации
+	sql_query = 'SELECT * FROM resumes';
+	sql_query = sql_query || generate_where(
+		filter_id_from,
+		filter_id_to,
+		filter_fullName,
+		filter_about,
+		filter_workExperience_from,
+		filter_workExperience_to,
+		filter_desiredSalary_from,
+		filter_desiredSalary_to,
+		filter_birthDate_from,
+		filter_birthDate_to,
+		filter_sendingDatetime_from,
+		filter_sendingDatetime_to,
+		filter_citiesToWorkInIds,
+		filter_desiredVacanciesIds,
+		sort_field,
+		sort_ascOrDesc,
+		records_on_page,
+		page
+	);
 	sql_query = sql_query || ' ORDER BY resumes.' || sort_field || ' ' || sort_ascOrDesc;
 	sql_query = sql_query || ' LIMIT ' || records_on_page || ' OFFSET ' || ((page - 1) * records_on_page);
 	sql_query = sql_query || ';';
+	RETURN QUERY EXECUTE sql_query;
+END $$;
+
+DROP FUNCTION IF EXISTS get_records_pages_number;
+CREATE FUNCTION get_records_pages_number(
+	IN filter_id_from               INT					DEFAULT NULL,
+	IN filter_id_to                 INT					DEFAULT NULL,
+	IN filter_fullName           	VARCHAR(255)		DEFAULT NULL,
+	IN filter_about                	TEXT				DEFAULT NULL,
+	IN filter_workExperience_from   INT					DEFAULT NULL,
+	IN filter_workExperience_to     INT					DEFAULT NULL,
+	IN filter_desiredSalary_from    DOUBLE PRECISION	DEFAULT NULL,
+	IN filter_desiredSalary_to      DOUBLE PRECISION	DEFAULT NULL,
+	IN filter_birthDate_from       	DATE				DEFAULT NULL,
+	IN filter_birthDate_to          DATE				DEFAULT NULL,
+	IN filter_sendingDatetime_from  TIMESTAMP			DEFAULT NULL,
+	IN filter_sendingDatetime_to   	TIMESTAMP			DEFAULT NULL,
+	IN filter_citiesToWorkInIds 	TEXT				DEFAULT NULL,
+	IN filter_desiredVacanciesIds  	TEXT				DEFAULT NULL,
+	IN sort_field           		VARCHAR(255)		DEFAULT 'id',
+	IN sort_ascOrDesc           	VARCHAR(4)			DEFAULT 'asc',
+	IN records_on_page              INT					DEFAULT 20,
+	IN page                  		INT					DEFAULT 1
+)
+RETURNS TABLE(
+	pages_number           			INT
+)
+LANGUAGE 'plpgsql'
+AS $$
+DECLARE
+	sql_query TEXT;
+BEGIN
+	sql_query = 'SELECT ceil(count(*) / ' || records_on_page || '::float)::integer as pages_number FROM resumes ' || generate_where(
+		filter_id_from,
+		filter_id_to,
+		filter_fullName,
+		filter_about,
+		filter_workExperience_from,
+		filter_workExperience_to,
+		filter_desiredSalary_from,
+		filter_desiredSalary_to,
+		filter_birthDate_from,
+		filter_birthDate_to,
+		filter_sendingDatetime_from,
+		filter_sendingDatetime_to,
+		filter_citiesToWorkInIds,
+		filter_desiredVacanciesIds,
+		sort_field,
+		sort_ascOrDesc,
+		records_on_page,
+		page
+	) || ';';
 	RETURN QUERY EXECUTE sql_query;
 END $$;
 
