@@ -2,10 +2,9 @@
     "recommendations": [
         "felixfbecker.php-debug",
         "eamodio.gitlens",
-        "ecmel.vscode-html-css",
         "ms-azuretools.vscode-docker",
-        "ms-vscode-remote.remote-containers",
         "redhat.vscode-yaml",
-        "mikestead.dotenv"
+        "nadim-vscode.symfony-code-snippets",
+        "ecmel.vscode-html-css"
     ]
 }

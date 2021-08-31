@@ -30,6 +30,7 @@ services:
     volumes:
       - .:${APP_ROOT}
       - ./config/ini/php.ini:/usr/local/etc/php/php.ini
+      - ./config/ini/conf.d/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
       - php-var:${APP_ROOT}/var
       - php-vendor:${APP_ROOT}/vendor
 

@@ -41,8 +41,8 @@ function n415_execute_command()
         return 0
     elif [ "$command" = "build" ]; then
         if [ "$1" = "php" ]; then
-            n415_execute_command set $n415_app_env
             n415_execute_command clear php
+            n415_execute_command set $n415_app_env
             docker build . -t symfony-study-3_image_php:8.0.9-fpm-buster
             return 0
         elif [ "$1" = "postgres" ]; then
@@ -119,12 +119,14 @@ function n415_execute_command()
         if [ "$1" = "dev" ]; then
             n415_app_env="dev"
             cp "./config/ini/php.ini-development" "./config/ini/php.ini"
-            echo "Окружение сменено на Development! Необходимо перезапустить проект."
+            docker exec symfony-study-3_container_php sh -c "cd .. && composer dump-env $n415_app_env"
+            echo "Установлено окружение Development! Необходимо перезапустить проект. Команда: n415 restart."
             return 0
         elif [ "$1" = "prod" ]; then
             n415_app_env="prod"
             cp "./config/ini/php.ini-production" "./config/ini/php.ini"
-            echo "Окружение сменено на Production! Необходимо перезапустить проект."
+            docker exec symfony-study-3_container_php sh -c "cd .. && composer dump-env $n415_app_env"
+            echo "Установлено окружение Production! Необходимо перезапустить проект. Команда: n415 restart."
             return 0
         else
             echo "Неверный аргумент! Допустимые значения: \"dev\", \"prod\"."
