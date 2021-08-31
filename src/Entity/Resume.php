@@ -8,6 +8,7 @@ use App\Repository\VacancyRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * Резюме
  * @ORM\Entity(repositoryClass=ResumeRepository::class)
  * @ORM\Table(name="resumes")
  */

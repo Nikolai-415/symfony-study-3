@@ -1,4 +1,6 @@
-INSERT INTO vacancies(id, parent_id, name) VALUES
+-- Добавление записей в таблицу вакансий
+INSERT INTO vacancies(id, parent_id, name)
+VALUES
     ( 0, null,  'Любая'),
     ( 1,    0,      'Медицина'),
     ( 2,    1,          'Врач-лаборант'),
@@ -49,5 +51,8 @@ INSERT INTO vacancies(id, parent_id, name) VALUES
     (47,   46,          'Адвокат'),
     (48,   46,          'Нотариус'),
     (49,   46,          'Судебный эксперт'),
-    (50,   46,          'Юрист');
+    (50,   46,          'Юрист')
+;
+
+-- Так как для записей вручную указывался ID, необходимо сместить идентификатор
 ALTER TABLE vacancies ALTER COLUMN id RESTART SET START 51;

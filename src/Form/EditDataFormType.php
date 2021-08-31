@@ -21,6 +21,9 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Validator\Constraints\File as ConstraintsFile;
 use Symfony\Component\Validator\Constraints\PositiveOrZero;
 
+/**
+ * Форма добавления нового или изменения существующего резюме
+ */
 class EditDataFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)

@@ -13,6 +13,9 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\PassportInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 
+/**
+ * Класс для авторизации пользователей через API
+ */
 class TokenAuthenticator extends AbstractAuthenticator
 {
     /**

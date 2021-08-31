@@ -1,4 +1,7 @@
-INSERT INTO cities(name) VALUES
+
+-- Добавление записей в таблицу городов
+INSERT INTO cities(name)
+VALUES
     ('Любой'),
     ('Москва'),
     ('Санкт-Петербург'),
@@ -14,4 +17,5 @@ INSERT INTO cities(name) VALUES
     ('Красноярск'),
     ('Воронеж'),
     ('Пермь'),
-    ('Волгоград');
+    ('Волгоград')
+;

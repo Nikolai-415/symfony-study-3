@@ -11,14 +11,23 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
+/**
+ * Контроллер для страниц авторизации, регистрации и выхода из аккаунта
+ */
 class SecurityController extends AbstractController
 {
+    /**
+     * Страница авторизации
+     */
     public function login(Request $request, AuthenticationUtils $authenticationUtils): Response
     {
-        if ($this->getUser()) {
+        // Если пользователь уже авторизован - перекидываем его на главную страницу
+        if ($this->getUser())
+        {
             return $this->redirectToRoute('index');
         }
 
+        // Создание и обработка формы авторизации
         $user = new User();
         $form = $this->createForm(LoginFormType::class, $user);
         $form->handleRequest($request);
@@ -35,23 +44,34 @@ class SecurityController extends AbstractController
         ]);
     }
 
+    /**
+     * Страница выхода из аккаунта
+     */
     public function logout()
     {
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 
+    /**
+     * Страница регистрации
+     */
     public function register(Request $request, UserPasswordHasherInterface $passwordHasher): Response
     {
-        if ($this->getUser()) {
+        // Если пользователь уже авторизован - перекидываем его на главную страницу
+        if ($this->getUser())
+        {
             return $this->redirectToRoute('index');
         }
 
+        // Создание и обработка формы регистрации
         $user = new User();
         $form = $this->createForm(RegisterFormType::class, $user);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            // encode the plain password
+        // Если форма отправлена
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            // Хэширование пароя
             $user->setPassword(
                 $passwordHasher->hashPassword(
                     $user,
@@ -59,12 +79,13 @@ class SecurityController extends AbstractController
                 )
             );
 
+            // Формирование токена пользователя для API. По умолчанию равен "$username:$password"
             $user->setToken($user->getUserIdentifier().":".$user->getPassword());
 
+            // Добавление пользователя в БД
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
-            // do anything else you need here, like send an email
 
             return $this->redirectToRoute('app_login');
         }
