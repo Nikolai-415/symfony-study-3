@@ -25,19 +25,23 @@ function n415_execute_command()
         echo "| build php                   | Собрать/пересобрать PHP"
         echo "| build postgres              | Собрать/пересобрать PostgreSQL"
         echo "| build project               | Собрать/пересобрать весь проект"
-        echo "| db tables create            | Создать таблицы в БД"
-        echo "| db tables seed              | Заполнить таблицы в БД"
-        echo "| db tables drop              | Удалить таблицы в БД"
-        echo "| db tables refresh           | Пересоздать и заполнить таблицы в БД"
+        echo "| tables create               | Создать таблицы в БД"
+        echo "| tables seed                 | Заполнить таблицы в БД"
+        echo "| tables drop                 | Удалить таблицы в БД"
+        echo "| tables refresh              | Пересоздать и заполнить таблицы в БД"
         echo "| up                          | Запустить проект"
         echo "| down                        | Остановить проект"
+        echo "| restart                     | Перезапустить проект"
         echo "| clear php                   | Очистить PHP"
         echo "| clear postgres              | Очистить PostgreSQL"
         echo "| clear project               | Очистить весь проект"
+        echo "| set dev                     | Сменить окружение на Development"
+        echo "| set prod                    | Сменить окружение на Production"
         echo "==========================================================================="
         return 0
     elif [ "$command" = "build" ]; then
         if [ "$1" = "php" ]; then
+            n415_execute_command set $n415_app_env
             n415_execute_command clear php
             docker build . -t symfony-study-3_image_php:8.0.9-fpm-buster
             return 0
@@ -52,13 +56,18 @@ function n415_execute_command()
             docker pull dpage/pgadmin4:5.6
             return 0
         else
-            echo "Неверный аргумент 1! Допустимые значения: \"php\", \"postgres\", \"project\"."
+            echo "Неверный аргумент! Допустимые значения: \"php\", \"postgres\", \"project\"."
         fi
     elif [ "$command" = "up" ]; then
             docker-compose up -d
+            docker exec symfony-study-3_container_php sh -c "cd .. && composer dump-env $n415_app_env"
             return 0
     elif [ "$command" = "down" ]; then
             docker-compose down
+            return 0
+    elif [ "$command" = "restart" ]; then
+            n415_execute_command down
+            n415_execute_command up
             return 0
     elif [ "$command" = "clear" ]; then
         if [ "$1" = "php" ]; then
@@ -82,33 +91,43 @@ function n415_execute_command()
             docker builder prune -af
             return 0
         else
-            echo "Неверный аргумент 1! Допустимые значения: \"php\", \"postgres\", \"project\"."
+            echo "Неверный аргумент! Допустимые значения: \"php\", \"postgres\", \"project\"."
         fi
-    elif [ "$command" = "db" ]; then
-        if [ "$1" = "tables" ]; then
-            if [ "$2" = "create" ]; then
-                echo "Создание таблиц в БД..."
-                n415_sql_execute "/var/lib/postgresql/sql-scripts" "tables-create"
-                return 0
-            elif [ "$2" = "seed" ]; then
-                echo "Заполнение таблиц в БД..."
-                n415_sql_execute "/var/lib/postgresql/sql-scripts" "tables-seed"
-                return 0
-            elif [ "$2" = "drop" ]; then
-                echo "Удаление таблиц из БД..."
-                n415_sql_execute "/var/lib/postgresql/sql-scripts" "tables-drop"
-                return 0
-            elif [ "$2" = "refresh" ]; then
-                echo "Перезаполнение таблиц в БД..."
-                n415_execute_command db tables drop
-                n415_execute_command db tables create
-                n415_execute_command db tables seed
-                return 0
-            else
-                echo "Неверный аргумент 2! Допустимые значения: \"create\", \"seed\", \"drop\", \"refresh\"."
-            fi
+    elif [ "$command" = "tables" ]; then
+        if [ "$1" = "create" ]; then
+            echo "Создание таблиц в БД..."
+            n415_sql_execute "/var/lib/postgresql/sql-scripts" "tables-create"
+            return 0
+        elif [ "$1" = "seed" ]; then
+            echo "Заполнение таблиц в БД..."
+            n415_sql_execute "/var/lib/postgresql/sql-scripts" "tables-seed"
+            return 0
+        elif [ "$1" = "drop" ]; then
+            echo "Удаление таблиц из БД..."
+            n415_sql_execute "/var/lib/postgresql/sql-scripts" "tables-drop"
+            return 0
+        elif [ "$1" = "refresh" ]; then
+            echo "Перезаполнение таблиц в БД..."
+            n415_execute_command tables drop
+            n415_execute_command tables create
+            n415_execute_command tables seed
+            return 0
         else
-            echo "Неверный аргумент 1! Допустимые значения: \"tables\"."
+            echo "Неверный аргумент! Допустимые значения: \"create\", \"seed\", \"drop\", \"refresh\"."
+        fi
+    elif [ "$command" = "set" ]; then
+        if [ "$1" = "dev" ]; then
+            n415_app_env="dev"
+            cp "./config/ini/php.ini-development" "./config/ini/php.ini"
+            echo "Окружение сменено на Development! Необходимо перезапустить проект."
+            return 0
+        elif [ "$1" = "prod" ]; then
+            n415_app_env="prod"
+            cp "./config/ini/php.ini-production" "./config/ini/php.ini"
+            echo "Окружение сменено на Production! Необходимо перезапустить проект."
+            return 0
+        else
+            echo "Неверный аргумент! Допустимые значения: \"dev\", \"prod\"."
         fi
     else
         echo "Неизвестная команда!"

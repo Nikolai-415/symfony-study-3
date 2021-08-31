@@ -3,6 +3,8 @@
 
 docker-compose.yml
 commands.sh
+commands-dev.sh
+commands-prod.sh
 
 nginx/
 postgres/

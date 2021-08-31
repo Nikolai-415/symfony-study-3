@@ -10,9 +10,10 @@ RUN chmod -R 777 ${APP_ROOT}
 
 # Копируем настройки ini
 COPY ./config/ini /usr/local/etc/php
+COPY ./config/ini/php.ini-development /usr/local/etc/php/php.ini
 
 # Генерация файла "php.ini" на основе значения APP_ENV из файла .env.local.php
-RUN php -r "function getMyArr(){ if(file_exists('${APP_ROOT}/.env.local.php')){ return include '${APP_ROOT}/.env.local.php'; } else return array('PHP_INI_FILE_NAME' => 'php.ini-development'); } copy('${APP_ROOT}/config/ini/'.getMyArr()['PHP_INI_FILE_NAME'], '/usr/local/etc/php/php.ini');"
+RUN php -r "function getMyArr(){ if(file_exists('${APP_ROOT}/.env.local.php')){ return include '${APP_ROOT}/.env.local.php'; } else return array('PHP_INI_FILE_NAME' => 'php.ini-production'); } copy('${APP_ROOT}/config/ini/'.getMyArr()['PHP_INI_FILE_NAME'], '/usr/local/etc/php/php.ini');"
 
 # Скачивание и включение XDebug
 RUN pecl install xdebug-3.0.4 && docker-php-ext-enable xdebug
