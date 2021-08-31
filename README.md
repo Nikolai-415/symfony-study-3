@@ -12,103 +12,115 @@
   <li><i><b>Composer v.2.1.5</b></i>;</li>
   <li><i><b>Nginx v.1.21.1</b></i>;</li>
   <li><i><b>PostgreSQL v.13.4</b></i>;</li>
-  <li><i><b>pgAdmin4 v.5.6</b></i>.</li>
+  <li><i><b>pgAdmin4 v.5.6</b></i>;</li>
+  <li><i><b>Bootstrap v.5.0.2</b></i>.</li>
 </ol>
 
 <h2>Необходимые компоненты</h2>
 
-<ol>
-  <li>Docker (используется Docker-Compose);</li>
-  <li>Composer (не обязательно - будет использоваться Composer из контейнера).</li>
-</ol>
+<ul>
+  <li>Docker (используется Docker-Compose).</li>
+</ul>
 
-<h2>Установка (при наличии Composer'а)</h2>
-
-<ol>
-  <li>Склонировать репозиторий;</li>
-  <li>Запустить терминал в корне проекта;</li>
-  <li>Установить все пакеты Composer'а командой:<br/>
-  <code>composer install && composer dump-autoload</code></li>
-  <li>Сгенерировать файл env-переменных окружения командой:<br/>
-  <code>composer dump-env dev</code> для development<br/>
-  <code>composer dump-env prod</code> для production</li>
-  <li>Собрать конфигурацию Docker-Compose командой:<br/>
-  <code>docker-compose build</code></li>
-</ol>
-
-<h2>Установка (при отсутствии Composer'а)</h2>
+<h2>Установка</h2>
 
 <ol>
   <li>Склонировать репозиторий;</li>
   <li>Запустить терминал в корне проекта;</li>
-  <li>Собрать и запустить образ PHP в конфигурации Docker-Compose командой:<br/>
-  <code>docker-compose up -d --build php</code><br/>
-  Дождаться запуска контейнера;</li>
-  <li>Зайти в консоль контейнера PHP (имеет название <i><b>symfony-study-3_container_php</b></i>). На Windows это команда:<br/>
-  <code>winpty docker exec -it symfony-study-3_container_php //bin//sh</code></li>
-  <li>Перейти на уровень вверх командой:<br/>
-  <code>cd ..</code></li>
-  <li>Сгенерировать файл env-переменных окружения командой:<br/>
-  <code>composer dump-env dev</code> для development<br/>
-  <code>composer dump-env prod</code> для production</li>
-  <li>Выйти из контейнера командой:<br/>
-  <code>exit</code></li>
-  <li>Остановить конфигурацию Docker-Compose командой:<br/>
-  <code>docker-compose down</code></li>
-  <li>Удалить старый образ PHP командой:<br/>
-  <code>docker rmi symfony-study-3_image_php</code></li>
-  <li>Собрать конфигурацию Docker-Compose командой:<br/>
-  <code>docker-compose build</code></li>
+  <li>Добавить shell-команды командой:<br/>
+  <code>. commands-prod.sh</code>
+  </li>
+  <li>Собрать проект командой:<br/>
+  <code>n415 build project</code>
+  </li>
 </ol>
 
 <h2>Запуск</h2>
 
 <ol>
-  <li>Запустить конфигурацию Docker-Compose командой:<br/>
-  <code>docker-compose up -d</code><br/>
-  Дождаться запуска всех контейнеров;</li>
+  <li>Запустить проект командой:<br/>
+  <code>n415 up</code>
+  </li>
+  <li>Создать таблицы в БД командой:<br/>
+  <code>n415 tables create</code>
+  </li>
+  <li>Заполнить таблицы в БД командой:<br/>
+  <code>n415 tables seed</code>
+  </li>
   <li>Система будет доступна по адресу:<br/>
-  <a href="http://localhost:80/" target="_blank">http://localhost:80/</a></li>
+  <a href="http://localhost:80/" target="_blank">http://localhost:80/</a><br/>
+  PGadmin (запускается спустя некоторое время после запуска PHP):<br/>
+  <a href="http://localhost:8080/" target="_blank">http://localhost:8080/</a><br/>
+  </li>
+</ol>
+
+<h2>Краткое описание</h2>
+
+<ol>
+  <li>На главной странице ничего примечательного не отображается. Неавторизованным пользователям доступны страницы для авторизации и регистрации.</li>
+  <li>
+    В БД по умолчанию присутствуют записи двух пользователей:<br/>
+    <ul>
+      <li><b>admin</b> (имеет все роли);</li>
+      <li><b>user</b> (не имеет ролей).</li>
+    </ul>
+    Пароль от обоих учётных записей: <b>password</b>.
+  </li>
+  <li>
+    После регистрации идёт перенаправление на форму авторизации (я ещё не разобрался как сделать автоматический вход после неё).
+  </li>
+  <li>
+    После авторизации пользователь попадает снова на главную страницу. В меню теперь доступны страница просмотра записей (при наличии соответствующей роли) и страница выхода из аккаунта.
+  </li>
+  <li>
+    На странице просмотра записей, помимо самой таблицы, присутствует кнопка для добавления записи, а также кнопки для фильтрации и сортировки. Присутствует панель паджинации сверху и снизу таблицы.
+  </li>
+  <li>
+    Для каждой записи в таблице есть также кнопки для изменения и удаления. Они доступны только если пользователь имеет соответствующие роли.
+  </li>
+  <li>
+    Все поля в таблице отображаются стандартно, за исключением аватара, который отображается как картинка, и файла, для которого отображается кнопка для скачивания.
+  </li>
+</ol>
+
+<h2>PGadmin</h2>
+
+<ol>
+  <li>При работе в PGadmin, добавить сервер необходимо с настройками:<br/>
+    <ul>
+      <li>Host: <b>postgres</b>;</li>
+      <li>Port: <b>5432</b>;</li>
+      <li>Username: <b>admin</b>;</li>
+      <li>Password: <b>password</b>.</li>
+    </ul>
+  </li>
 </ol>
 
 <h2>Остановка</h2>
 
-<ol>
-  <li>Остановить конфигурацию Docker-Compose командой:<br/>
-  <code>docker-compose down</code></li>
-</ol>
+<ul>
+  <li>Остановить проект командой:<br/>
+  <code>n415 down</code>
+  </li>
+</ul>
 
-<h2>Смена окружения (при наличии Composer'а)</h2>
+<h2>Смена окружения</h2>
 
-<ol>
-  <li>(Если конфигурация Docker-Compose запущена) Остановить конфигурацию Docker-Compose командой:<br/>
-  <code>docker-compose down</code></li>
-  <li>Удалить старый образ PHP командой:<br/>
-  <code>docker rmi symfony-study-3_image_php</code></li>
-  <li>Выполнить пункты 4-5 из <a href="#установка-при-наличии-composerа">установки (при наличии Composer'а)</a>.</li>
-</ol>
-
-<h2>Смена окружения (при отсутствии Composer'а)</h2>
-
-<ol>
-  <li>(Если конфигурация Docker-Compose остановлена) Запустить образ PHP в конфигурации Docker-Compose командой:<br/>
-  <code>docker-compose up -d php</code><br/>
-  Дождаться запуска контейнера;</li>
-  <li>Выполнить пункты 4-10 из <a href="#установка-при-отсутствии-composerа">установки (при отсутствии Composer'а)</a>.</li>
-</ol>
+<ul>
+  <li>По умолчанию используется окружение Production. Для смены на Development используется команда:<br/>
+  <code>n415 set dev</code>
+  </li>
+  <li>Для смены на Production используется аналогичная команда:<br/>
+  <code>n415 set prod</code>
+  </li>
+</ul>
 
 <h2>Удаление</h2>
-
 <ol>
-  <li>Удалить сгенерированные volume'ы командами:<br/>
-  <code>volume rm symfony-study-3_volume_php-var</code><br/>
-  <code>volume rm symfony-study-3_volume_php-vendor</code><br/>
-  <code>volume rm symfony-study-3_volume_postgres-data</code><br/>
-  <code>volume rm symfony-study-3_volume_pgadmin-data</code></li>
-  <li>Удалить сгенерированный образ для контейнера PHP:<br/>
-  <code>docker rmi symfony-study-3_image_php</code></li>
-  <li>Конфигурация проекта также использует образы: <i><b>nginx:1.21.1</b></i>, <i><b>postgres:13.4-buster</b></i> и <i><b>dpage/pgadmin4:5.6</b></i>. Если они больше нигде не используются, то и их удалить соответствующими командами:<br/>
+  <li>Очистить проект командой:<br/>
+  <code>n415 clear project</code>
+  </li>
+  <li>Конфигурация проекта использует образы: <i><b>nginx:1.21.1</b></i> и <i><b>dpage/pgadmin4:5.6</b></i>. Если они больше нигде не используются, то и их удалить соответствующими командами:<br/>
   <code>docker rmi nginx:1.21.1</code><br/>
-  <code>docker rmi postgres:13.4-buster</code><br/>
   <code>docker rmi dpage/pgadmin4:5.6</code></li>
 </ol>
