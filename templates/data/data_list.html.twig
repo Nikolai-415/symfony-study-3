@@ -2,14 +2,210 @@
 
 {% block title %}Просмотр записей{% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function showOrHideFormSortAndOrder()
+        {
+            var form    = document.getElementById("data_list_form");
+            var button  = document.getElementById("buttonFormSortAndOrder");
+            if (form.style.display === "none")
+            {
+                form.style.display = "block";
+                button.innerText = "Скрыть форму фильтрации и сортировки";
+            }
+            else
+            {
+                form.style.display = "none";
+                button.innerText = "Показать форму фильтрации и сортировки";
+            }
+        }
+    </script>
+{% endblock %}
+
 {% block header %}Просмотр записей{% endblock %}
 
 {% block content %}
-    {% if is_granted('ROLE_ADD') %}
-        <div>
-            <a href="{{ path('edit_data') }}" class="btn-success btn mb-2">Добавить</a>
+    <div>
+        {% if is_granted('ROLE_ADD') %}
+                <a href="{{ path('edit_data') }}" class="btn-success btn mb-2">Добавить новую запись</a>
+        {% endif %}
+        <button class="btn btn-info mb-2" onclick="showOrHideFormSortAndOrder()" id="buttonFormSortAndOrder">
+            Показать форму фильтрации и сортировки
+        </button>
+        <a href="{{ path('data_list', {'page': 1 }) }}" class="btn btn-warning mb-2">
+            Сбросить фильтрацию, сортировку и паджинацию
+        </a>
+    </div>
+    {% if is_form_used %}
+        <div class="alert alert-success w-50 mx-auto mb-2">
+            Действует фильтрация и сортировка!
         </div>
     {% endif %}
+
+    {{ form_start(form, {
+            attr: { class: 'w-75 mx-auto', style: 'display: none;', id: 'data_list_form' },
+    })}}
+        <div class="row m-0">
+            {{ form_row(form.isFilter_id, {
+                    row_attr: { class: 'input-group-text col-4' },
+                    label: 'ID',
+            })}}
+            {{ form_row(form.filter_id_from, {
+                    row_attr: { class: 'input-group col p-0' },
+                    label: 'от',
+                    attr: { placeholder: 0 },
+            })}}
+            {{ form_row(form.filter_id_to, {
+                    row_attr: { class: 'input-group col p-0' },
+                    label: 'до',
+                    attr: { placeholder: 100 },
+            })}}
+            <label class="input-group-text col">(включительно)</label>
+        </div>
+        <div class="row m-0">
+            {{ form_row(form.isFilter_fullName, {
+                    row_attr: { class: 'input-group-text col-4' },
+                    label: 'ФИО',
+            })}}
+            {{ form_row(form.filter_fullName, {
+                    row_attr: { class: 'input-group col p-0' },
+                    label: 'содержит',
+            })}}
+        </div>
+        <div class="row m-0">
+            {{ form_row(form.isFilter_about, {
+                    row_attr: { class: 'input-group-text col-4' },
+                    label: 'О себе',
+            })}}
+            {{ form_row(form.filter_about, {
+                    row_attr: { class: 'input-group col p-0' },
+                    label: 'содержит',
+            })}}
+        </div>
+        <div class="row m-0">
+            {{ form_row(form.isFilter_workExperience, {
+                    row_attr: { class: 'input-group-text col-4' },
+                    label: 'Опыт работы',
+            })}}
+            {{ form_row(form.filter_workExperience_from, {
+                    row_attr: { class: 'input-group col p-0' },
+                    label: 'от',
+                    attr: { placeholder: 5 },
+            })}}
+            {{ form_row(form.filter_workExperience_to, {
+                    row_attr: { class: 'input-group col p-0' },
+                    label: 'до',
+                    attr: { placeholder: 10 },
+            })}}
+            <label class="input-group-text col">лет (включительно)</label>
+        </div>
+        <div class="row m-0">
+            {{ form_row(form.isFilter_desiredSalary, {
+                    row_attr: { class: 'input-group-text col-4' },
+                    label: 'Желаемая ЗП',
+            })}}
+            {{ form_row(form.filter_desiredSalary_from, {
+                    row_attr: { class: 'input-group col p-0' },
+                    label: 'от',
+                    attr: { placeholder: 30000 },
+            })}}
+            {{ form_row(form.filter_desiredSalary_to, {
+                    row_attr: { class: 'input-group col p-0' },
+                    label: 'до',
+                    attr: { placeholder: 50000 },
+            })}}
+            <label class="input-group-text col">рублей (включительно)</label>
+        </div>
+        <div class="row m-0">
+            {{ form_row(form.isFilter_birthDate, {
+                    row_attr: { class: 'input-group-text col-4' },
+                    label: 'Дата рождения',
+            })}}
+            {{ form_row(form.filter_birthDate_from, {
+                    row_attr: { class: 'input-group col p-0' },
+                    label: 'от',
+                    label_attr: { class: 'col-2 input-group-text' },
+                    attr: { class: 'col' },
+            })}}
+            {{ form_row(form.filter_birthDate_to, {
+                    row_attr: { class: 'input-group col p-0' },
+                    label: 'до',
+                    label_attr: { class: 'col-2 input-group-text' },
+                    attr: { class: 'col' },
+            })}}
+        </div>
+        <div class="row m-0">
+            {{ form_row(form.isFilter_sendingDatetime, {
+                    row_attr: { class: 'input-group-text col-4' },
+                    label: 'Дата и время отправки резюме',
+            })}}
+            {{ form_row(form.filter_sendingDatetime_from, {
+                    row_attr: { class: 'input-group col p-0' },
+                    label: 'от',
+                    label_attr: { class: 'col-2 input-group-text' },
+                    attr: { class: 'col' },
+            })}}
+            {{ form_row(form.filter_sendingDatetime_to, {
+                    row_attr: { class: 'input-group col p-0' },
+                    label: 'до',
+                    label_attr: { class: 'col-2 input-group-text' },
+                    attr: { class: 'col' },
+            })}}
+        </div>
+        <div class="row m-0">
+            {{ form_row(form.isFilter_cityToWorkIn, {
+                    row_attr: { class: 'input-group-text col-4' },
+                    label: 'Город трудоустройства',
+            })}}
+            {{ form_row(form.filter_cityToWorkIn, {
+                    row_attr: { class: 'input-group col p-2 scrollable form-control' },
+                    label_attr: { hidden: true },
+                    attr: { class: 'list_element' },
+            })}}
+        </div>
+        <div class="row m-0">
+            {{ form_row(form.isFilter_desiredVacancy, {
+                    row_attr: { class: 'input-group-text col-4' },
+                    label: 'Вакансия',
+            })}}
+            {{ form_row(form.filter_desiredVacancy, {
+                    row_attr: { class: 'input-group col p-2 scrollable form-control' },
+                    label_attr: { hidden: true },
+                    attr: { class: 'list_element' },
+            })}}
+        </div>
+        <div class="row m-0 mt-2">
+            {{ form_row(form.sort_field, {
+                    row_attr: { class: 'input-group col p-0' },
+                    label: 'Сортировать по полю',
+                    label_attr: { class: 'input-group-text col-6' },
+            })}}
+            {{ form_row(form.sort_ascOrDesc, {
+                    row_attr: { class: 'input-group col p-0' },
+                    label: 'в порядке',
+                    label_attr: { class: 'input-group-text col-6' },
+            })}}
+        </div>
+        {{ form_row(form.records_on_page, {
+                row_attr: { class: 'input-group' },
+                label: 'Записей на странице',
+                label_attr: { class: 'input-group-text' },
+                attr: { placeholder: 20 },
+        })}}
+        {{ form_row(form.submit, {
+                label: 'Применить фильтрацию и сортировку',
+                row_attr: { class: 'my-2' },
+        })}}
+    {{ form_end(form) }}
+
+    {{ include('pagination.html.twig', {
+        route: app.request.attributes.get('_route'),
+        query: app.request.query.all,
+        current_page: current_page,
+        pages_number: pages_number,
+        pages_at_side: pages_at_side,
+    })}}
 
     <table class="table table-striped table-hover table-bordered align-middle table-responsive table-sm">
         <thead class="table-secondary align-middle">
@@ -37,12 +233,24 @@
                         <td>{{ (resume.getAbout() ?? '') == '' ? 'Нет информации' : resume.getAbout() }}</td>
                         <td>{{ resume.getWorkExperience() }}</td>
                         <td>{{ resume.getDesiredSalary() }}</td>
-                        <td>{{ resume.getBirthDate().format('d.m.Y') }}</td>
-                        <td>{{ resume.getSendingDatetime().format('d.m.Y H:i:s') }}</td>
+                        <td>{{ resume.getBirthDate().format('Y-m-d') }}</td>
+                        <td>{{ resume.getSendingDatetime().format('Y-m-d H:i:s') }}</td>
                         <td>{{ resume.getCityToWorkIn().getName() }}</td>
                         <td>{{ resume.getDesiredVacancy().getName() }}</td>
-                        <td>{{ resume.getAvatar() }}</td>
-                        <td>{{ resume.getFile() }}</td>
+                        <td>
+                            {% if resume.getAvatar() %}
+                                <img src="data:image/jpeg;base64,{{ resume.getAvatar() }}" class="avatar" alt="&nbsp;Ошибка при загрузке картинки" />
+                            {% else %}
+                                Не установлен
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if resume.getFile() %}
+                                <a href="{{ path('download_file', { id: resume.id }) }}" target="_blank" class="btn-secondary btn">Скачать</a>
+                            {% else %}
+                                Не прикреплён
+                            {% endif %}
+                        </td>
                         <td>
                             {% if is_granted('ROLE_EDIT') %}
                                 <a href="{{ path('edit_data', { id: resume.id }) }}" class="btn-warning btn">Изменить</a>
@@ -61,9 +269,22 @@
                 {% endfor %}
             {% else %}
                 <tr>
-                    <td colspan="13">Нет резюме!</td>
+                    <td colspan="13">
+                        {% if is_form_used %}
+                            По выбранным настройкам фильтрации и паджинации резюме не найдены!
+                        {% else %}
+                            Нет резюме!
+                        {% endif %}
+                    </td>
                 </tr>
             {% endif %}
         </tbody>
     </table>
+    {{ include('pagination.html.twig', {
+        route: app.request.attributes.get('_route'),
+        query: app.request.query.all,
+        current_page: current_page,
+        pages_number: pages_number,
+        pages_at_side: pages_at_side,
+    })}}
 {% endblock %}

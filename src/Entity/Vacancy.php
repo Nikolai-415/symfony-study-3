@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * Вакансия
  * @ORM\Entity(repositoryClass=VacancyRepository::class)
  * @ORM\Table(name="vacancies")
  */

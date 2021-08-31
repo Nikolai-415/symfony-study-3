@@ -8,6 +8,7 @@
            and uncomment the following Encore helpers to start using Symfony UX #}
         {% block stylesheets %}
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+            <link rel="stylesheet" type="text/css" href="{{ asset('/css/style.css') }}" />
             {#{{ encore_entry_link_tags('app') }}#}
         {% endblock %}
 
@@ -25,8 +26,10 @@
                 <li class="nav-item">
                     <a class="nav-link {% if app.request.attributes.get('_route') == 'index' %} active {% endif %}" aria-current="page" href="{{ path('index') }}">Главная</a>
                 </li>
-                {% if is_granted('IS_AUTHENTICATED_FULLY') %} {# Если пользователь авторизован #}
-                    {% if is_granted('ROLE_LIST_VIEW') %} {# Если пользователь имеет права на просмотр записей #}
+                {# Если пользователь авторизован #}
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    {# Если пользователь имеет права на просмотр записей #}
+                    {% if is_granted('ROLE_LIST_VIEW') %}
                         <li class="nav-item">
                             <a class="nav-link {% if app.request.attributes.get('_route') == 'data_list' %} active {% endif %}" aria-current="page" href="{{ path('data_list') }}">Просмотр записей</a>
                         </li>
@@ -34,6 +37,7 @@
                     <li class="nav-item">
                         <a class="nav-link {% if app.request.attributes.get('_route') == 'app_logout' %} active {% endif %}" href="{{ path('app_logout') }}">Выйти</a>
                     </li>
+                {# Если пользователь не авторизован #}
                 {% else %}
                     <li class="nav-item">
                         <a class="nav-link {% if app.request.attributes.get('_route') == 'app_login' %} active {% endif %}" href="{{ path('app_login') }}">Авторизация</a>
@@ -50,22 +54,27 @@
             <h1 class="text-center mt-2 mb-4">
                 {% block header %}Заголовок по умолчанию{% endblock %}
             </h1>
-            <div class="text-center">
-                {% if errors_texts ?? false %}
-                    При попытке загрузки данных возникли следующие ошибки:
-                    {% for error_text in errors_texts %}
-                        <li>{{ error_text }};</li>
-                    {% endfor %}
-                {% endif %}
-            </div>
-            <div class="text-center">
-            {% block content %}
-                Содержание страницы по умолчанию
-            {% endblock %}
-            </div>
+            {% if errors_texts ?? false %}
+                <div class="alert alert-danger w-50 mx-auto my-2 text-center">
+                        При попытке загрузки данных возникли следующие ошибки:<br/>
+                        {% for error_text in errors_texts %}
+                            <b>{{ error_text }}</b><br/>
+                        {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center">
+                {% block content %}
+                    Содержание страницы по умолчанию
+                {% endblock %}
+                </div>
+            {% endif %}
+            <button class="btn btn-secondary btn-lg" onclick="scrollToTopFunction()" id="button_scroll_to_top">Наверх</button>
         </main>
-        <footer class="text-center mt-4">
+        <footer class="text-center mt-4" id="footer">
             2021 г.
         </footer>
+        {% block js_after_footer %}
+            <script src="{{ asset('/js/scroll_to_top.js') }}"></script>
+        {% endblock %}
     </body>
 </html>

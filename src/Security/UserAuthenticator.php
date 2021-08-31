@@ -16,6 +16,9 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\PassportInterface;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
+/**
+ * Класс для авторизации пользователей через форму на сайте
+ */
 class UserAuthenticator extends AbstractLoginFormAuthenticator
 {
     use TargetPathTrait;
@@ -39,7 +42,7 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
             new UserBadge($username),
             new PasswordCredentials($request->get('login_form', '')['password']),
             [
-                new CsrfTokenBadge('authenticate', $request->get('login_form')['_csrf_token']),
+                new CsrfTokenBadge('authenticate', $request->get('login_form')['_token']),
             ]
         );
     }

@@ -1,0 +1,58 @@
+<nav>
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if (current_page <= 1) or (pages_number == 0) %} disabled {% endif %}">
+            <a class="page-link" href="{{ path(route, { page: current_page - 1 } + query) }}" tabindex="-1">
+                Назад
+            </a>
+        </li>
+        {% if pages_number == 0 %}
+            <li class="page-item disabled">
+                <a class="page-link">
+                    ...
+                </a>
+            </li>
+        {% else %}
+            {% if current_page > pages_number %}
+                {% set current_page = pages_number + 1 %}
+            {% endif %}
+
+            {% for i in 1..pages_number %}
+                {% set is_link_visible = true %}
+
+                {% set is_link_visible = true %}
+
+                {% set is_dots_visible = false %}
+                {% if
+                    ((i > pages_at_side) and (i < (current_page - pages_at_side)) and (current_page - pages_at_side - 2 > pages_at_side)) or
+                    ((i > current_page + pages_at_side) and (i < (pages_number - pages_at_side)) and (pages_number - pages_at_side * 2 - 2 > current_page))
+                %}
+                    {% set is_link_visible = false %}
+                    {% set is_dots_visible = true %}
+                {% endif %}
+
+                {% if ((i == (current_page - pages_at_side - 1)) or (i == (current_page + pages_at_side + 1))) and is_dots_visible %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ path(route, { page: i } + query) }}">
+                            ...
+                        </a>
+                    </li>
+                    {% set is_dots_visible = false %}
+                {% endif %}
+
+                {% if is_link_visible == true %}
+                    <li class="page-item {% if i == current_page %} active {% endif %}">
+                        <a class="page-link" href="{{ path(route, { page: i } + query) }}">
+                            {{ i }}
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+        <li class="page-item {% if (current_page >= pages_number) or (pages_number == 0) %} disabled {% endif %}">
+            <a class="page-link" href="{{ path(route, { page: current_page + 1 } + query) }}">
+                Вперёд
+            </a>
+        </li>
+    </ul>
+</nav>

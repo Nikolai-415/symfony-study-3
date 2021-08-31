@@ -17,10 +17,14 @@
 {% endblock %}
 
 {% block content %}
-    <a href="{{ path('data_list') }}" class="btn-warning btn mb-2">Назад</a>
+    <a href="{{ path('data_list') }}" class="btn-warning btn mb-2">Назад к списку всех записей</a>
     {{ form_start(form, {
             attr: { class: 'w-75 mx-auto' },
     })}}
+        {% if success_message ?? false %}
+            <div class="alert alert-success">{{ success_message }}</div>
+        {% endif %}
+
         {{  form_row(form.fullName, {
                 label: 'ФИО',
                 row_attr: { class: 'input-group' },
@@ -38,7 +42,7 @@
                 label_attr: { class: 'col-4' },
         })}}
         {{  form_row(form.workExperience, {
-                row_attr: { class: 'input-group' },
+                row_attr: { class: 'input-group mt-2' },
                 label: 'Опыт работы (лет)',
                 label_attr: { class: 'col-4' },
         })}}
@@ -47,24 +51,53 @@
                 label: 'Желаемая заработная плата (руб.)',
                 label_attr: { class: 'col-4' },
         })}}
-        {{ form_row(form.sendingDatetime, {
-                row_attr: { class: 'input-group row-cols-lg-auto' },
-                label: 'Дата отправки',
-                label_attr: { class: 'col-4 input-group-text' },
-                attr: { class: 'col-8' },
-        })}}
+        {% if is_edit %}
+            <div class="input-group mt-2 mx-auto">
+                <label class="col-4 input-group-text">Текущий аватар</label>
+                <div class="col-8 text-center my-2">
+                    {% if resume.getAvatar() %}
+                        <img src="data:image/jpeg;base64,{{ resume.getAvatar() }}" class="avatar" malt="&nbsp;Ошибка при загрузке картинки" />
+                    {% else %}
+                        Не установлен
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
         {{ form_row(form.avatar, {
                 row_attr: { class: 'input-group' },
-                label: 'Аватар',
+                label: 'Новый аватар',
                 label_attr: { class: 'col-4' },
         })}}
+        {% if is_edit and resume.getAvatar() %} {% set isAvatarHidden = false %} {% else %} {% set isAvatarHidden = true %} {% endif %}
+        {{ form_row(form.deleteAvatar, {
+                row_attr: { class: 'input-group-text', hidden: isAvatarHidden },
+                label: 'Удалить аватар (прикреплённый файл игнорируется)',
+        })}}
+
+        {% if is_edit %}
+            <div class="input-group mt-2">
+                <label class="col-4 input-group-text">Текущий файл резюме</label>
+                {% if resume.getFile() %}
+                    <a href="{{ path('download_file', { id: resume.id }) }}" target="_blank" class="col-8 btn-secondary btn">{{ resume.getFileName() }}</a>
+                {% else %}
+                    <div class="col-8 text-center my-2">
+                        Не прикреплён
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
         {{ form_row(form.file, {
                 row_attr: { class: 'input-group' },
-                label: 'Файл резюме',
+                label: 'Новый файл резюме',
                 label_attr: { class: 'col-4' },
         })}}
+        {% if is_edit and resume.getFile() %} {% set isFileHidden = false %} {% else %} {% set isFileHidden = true %} {% endif %}
+        {{ form_row(form.deleteFile, {
+                row_attr: { class: 'input-group-text', hidden: isFileHidden },
+                label: 'Удалить файл резюме (прикреплённый файл игнорируется)',
+        })}}
         {{ form_row(form.cityToWorkIn, {
-                row_attr: { class: 'input-group' },
+                row_attr: { class: 'input-group mt-2' },
                 label: 'Город трудоустройства',
                 label_attr: { class: 'col-4' },
         })}}
@@ -72,6 +105,12 @@
                 row_attr: { class: 'input-group' },
                 label: 'Желаемая вакансия',
                 label_attr: { class: 'col-4' },
+        })}}
+        {{ form_row(form.sendingDatetime, {
+                row_attr: { class: 'input-group' },
+                label: 'Дата и время отправки резюме',
+                label_attr: { class: 'col-4 input-group-text' },
+                attr: { class: 'col-8' },
         })}}
         {{ form_row(form.submit, {
                 label: 'Сохранить',

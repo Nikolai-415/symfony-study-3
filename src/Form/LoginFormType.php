@@ -12,6 +12,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
+/**
+ * Форма авторизации
+ */
 class LoginFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -32,8 +35,7 @@ class LoginFormType extends AbstractType
                 ],
             ])
             ->add('password', PasswordType::class, [
-                // instead of being set onto the object directly,
-                // this is read and encoded in the controller
+                // Instead of being set onto the object directly, this is read and encoded in the controller
                 'mapped' => false,
                 'attr' => ['autocomplete' => 'current-password'],
                 'constraints' => [
@@ -56,12 +58,6 @@ class LoginFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
-            // enable/disable CSRF protection for this form
-            'csrf_protection' => true,
-            // the name of the hidden HTML field that stores the token
-            'csrf_field_name' => '_csrf_token',
-            // an arbitrary string used to generate the value of the token
-            // using a different string for each form improves its security
             'csrf_token_id'   => 'authenticate',
         ]);
     }

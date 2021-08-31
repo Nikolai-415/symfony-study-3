@@ -47,6 +47,7 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/data_list, roles: ROLE_LIST_VIEW }
+        - { path: ^/download_file/\d+$, roles: ROLE_LIST_VIEW }
         - { path: ^/api/cities_list, roles: ROLE_LIST_VIEW }
         - { path: ^/api/vacancies_list, roles: ROLE_LIST_VIEW }
         - { path: ^/api/data_list, roles: ROLE_LIST_VIEW }
