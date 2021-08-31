@@ -18,13 +18,16 @@ function n415_execute_command()
     shift
     
     if [ "$command" = "help" ]; then
-        echo "==========================================================================="
+        echo "============================================================================================"
         echo "| Команда                     | Описание"
-        echo "==========================================================================="
+        echo "============================================================================================"
         echo "| help                        | Вывести список всех команд"
-        echo "| build php                   | Собрать/пересобрать PHP"
-        echo "| build postgres              | Собрать/пересобрать PostgreSQL"
-        echo "| build project               | Собрать/пересобрать весь проект"
+        echo "| build php                   | Собрать PHP"
+        echo "| build postgres              | Собрать PostgreSQL"
+        echo "| build project               | Собрать весь проект"
+        echo "| rebuild php                 | Пересобрать PHP"
+        echo "| rebuild postgres            | Пересобрать PostgreSQL"
+        echo "| rebuild project             | Пересобрать весь проект"
         echo "| tables create               | Создать таблицы в БД"
         echo "| tables seed                 | Заполнить таблицы в БД"
         echo "| tables drop                 | Удалить таблицы в БД"
@@ -35,25 +38,40 @@ function n415_execute_command()
         echo "| clear php                   | Очистить PHP"
         echo "| clear postgres              | Очистить PostgreSQL"
         echo "| clear project               | Очистить весь проект"
-        echo "| set dev                     | Сменить окружение на Development"
-        echo "| set prod                    | Сменить окружение на Production"
-        echo "==========================================================================="
+        echo "| set working dev             | Сменить окружение на Development во время работы контейнеров"
+        echo "| set stopped dev             | Сменить окружение на Development если контейнеры остановлены"
+        echo "| set working prod            | Сменить окружение на Production во время работы контейнеров"
+        echo "| set stopped prod            | Сменить окружение на Production если контейнеры остановлены"
+        echo "============================================================================================"
         return 0
     elif [ "$command" = "build" ]; then
         if [ "$1" = "php" ]; then
-            n415_execute_command clear php
-            n415_execute_command set $n415_app_env
+            n415_execute_command set stopped $n415_app_env
             docker build . -t symfony-study-3_image_php:8.0.9-fpm-buster
             return 0
         elif [ "$1" = "postgres" ]; then
-            n415_execute_command clear postgres
             docker build ./postgres -t symfony-study-3_image_postgres:13.4-buster
             return 0
         elif [ "$1" = "project" ]; then
-            n415_execute_command clear project
             docker-compose build
             docker pull nginx:1.21.1
             docker pull dpage/pgadmin4:5.6
+            return 0
+        else
+            echo "Неверный аргумент! Допустимые значения: \"php\", \"postgres\", \"project\"."
+        fi
+    elif [ "$command" = "rebuild" ]; then
+        if [ "$1" = "php" ]; then
+            n415_execute_command clear php
+            n415_execute_command build php
+            return 0
+        elif [ "$1" = "postgres" ]; then
+            n415_execute_command clear postgres
+            n415_execute_command build postgres
+            return 0
+        elif [ "$1" = "project" ]; then
+            n415_execute_command clear project
+            n415_execute_command build project
             return 0
         else
             echo "Неверный аргумент! Допустимые значения: \"php\", \"postgres\", \"project\"."
@@ -78,6 +96,7 @@ function n415_execute_command()
             return 0
         elif [ "$1" = "postgres" ]; then
             docker volume rm symfony-study-3_volume_postgres-data
+            docker volume rm symfony-study-3_volume_pgadmin-data
             docker rmi symfony-study-3_image_postgres:13.4-buster
             docker builder prune -af
             return 0
@@ -116,20 +135,38 @@ function n415_execute_command()
             echo "Неверный аргумент! Допустимые значения: \"create\", \"seed\", \"drop\", \"refresh\"."
         fi
     elif [ "$command" = "set" ]; then
-        if [ "$1" = "dev" ]; then
-            n415_app_env="dev"
-            cp "./config/ini/php.ini-development" "./config/ini/php.ini"
-            docker exec symfony-study-3_container_php sh -c "cd .. && composer dump-env $n415_app_env"
-            echo "Установлено окружение Development! Необходимо перезапустить проект. Команда: n415 restart."
-            return 0
-        elif [ "$1" = "prod" ]; then
-            n415_app_env="prod"
-            cp "./config/ini/php.ini-production" "./config/ini/php.ini"
-            docker exec symfony-study-3_container_php sh -c "cd .. && composer dump-env $n415_app_env"
-            echo "Установлено окружение Production! Необходимо перезапустить проект. Команда: n415 restart."
-            return 0
+        if [ "$1" = "working" ]; then
+            if [ "$2" = "dev" ]; then
+                n415_app_env="dev"
+                cp "./config/ini/php.ini-development" "./config/ini/php.ini"
+                docker exec symfony-study-3_container_php sh -c "cd .. && composer dump-env $n415_app_env"
+                echo "Установлено окружение Development! Необходимо перезапустить проект. Команда: n415 restart."
+                return 0
+            elif [ "$2" = "prod" ]; then
+                n415_app_env="prod"
+                cp "./config/ini/php.ini-production" "./config/ini/php.ini"
+                docker exec symfony-study-3_container_php sh -c "cd .. && composer dump-env $n415_app_env"
+                echo "Установлено окружение Production! Необходимо перезапустить проект. Команда: n415 restart."
+                return 0
+            else
+                echo "Неверный аргумент 2! Допустимые значения: \"dev\", \"prod\"."
+            fi
+        elif [ "$1" = "stopped" ]; then
+            if [ "$2" = "dev" ]; then
+                n415_app_env="dev"
+                cp "./config/ini/php.ini-development" "./config/ini/php.ini"
+                echo "Установлено окружение Production!"
+                return 0
+            elif [ "$2" = "prod" ]; then
+                n415_app_env="prod"
+                cp "./config/ini/php.ini-production" "./config/ini/php.ini"
+                echo "Установлено окружение Production!"
+                return 0
+            else
+                echo "Неверный аргумент 2! Допустимые значения: \"dev\", \"prod\"."
+            fi
         else
-            echo "Неверный аргумент! Допустимые значения: \"dev\", \"prod\"."
+            echo "Неверный аргумент 1! Допустимые значения: \"working\", \"stopped\"."
         fi
     else
         echo "Неизвестная команда!"

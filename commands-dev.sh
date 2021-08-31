@@ -1,2 +1,2 @@
 . commands.sh
-n415 set dev
+n415 set stopped dev

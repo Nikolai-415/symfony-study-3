@@ -12,7 +12,7 @@ RUN chmod -R 777 ${APP_ROOT}
 COPY ./config/ini /usr/local/etc/php
 
 # Скачивание и включение XDebug
-RUN pecl install xdebug-3.0.4 && docker-php-ext-enable xdebug
+RUN pecl install xdebug-3.0.4
 
 # Необходимо для скачиваний расширений
 RUN apt-get update

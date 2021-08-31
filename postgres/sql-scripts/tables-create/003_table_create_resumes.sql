@@ -21,7 +21,6 @@ CREATE TABLE resumes
 
 -- Функция для генерации строчки с условиями фильтрации
 -- Используется функциями get_records(...) и get_records_pages_number(...), определёнными далее в этом файле
-DROP FUNCTION IF EXISTS generate_where;
 CREATE FUNCTION generate_where(
     IN filter_id_from               INT                 DEFAULT NULL,
     IN filter_id_to                 INT                 DEFAULT NULL,
@@ -105,7 +104,6 @@ BEGIN
 END $$;
 
 -- Функция для получения выборки данных таблицы резюме с учётом фильтрации, сортировки и паджинации
-DROP FUNCTION IF EXISTS get_records;
 CREATE FUNCTION get_records(
     IN filter_id_from               INT                 DEFAULT NULL,
     IN filter_id_to                 INT                 DEFAULT NULL,
@@ -173,7 +171,6 @@ BEGIN
 END $$;
 
 -- Функция для получения количества результатов выборки данных таблицы резюме с учётом фильтрации
-DROP FUNCTION IF EXISTS get_records_pages_number;
 CREATE FUNCTION get_records_pages_number(
     IN filter_id_from               INT                 DEFAULT NULL,
     IN filter_id_to                 INT                 DEFAULT NULL,
@@ -226,7 +223,6 @@ BEGIN
 END $$;
 
 -- Функция для получения записи из таблицы резюме по её ID
-DROP FUNCTION IF EXISTS get_record;
 CREATE FUNCTION get_record(
     IN _id                  INT
 )
@@ -252,7 +248,6 @@ END $$;
 
 -- Функция для добавления записи в таблицу резюме
 -- Возвращает 'success' в случае успешного выполнения, или текст ошибки, в случае возникновения таковой
-DROP FUNCTION IF EXISTS add_record;
 CREATE FUNCTION add_record(
     IN _full_name           VARCHAR(255),
     IN _about               TEXT,
@@ -308,7 +303,6 @@ END $$;
 
 -- Функция для изменения записи в таблице резюме по её ID
 -- Возвращает 'success' в случае успешного выполнения, или текст ошибки, в случае возникновения таковой
-DROP FUNCTION IF EXISTS edit_record;
 CREATE FUNCTION edit_record(
     IN _id                      INT,
 
@@ -377,7 +371,6 @@ END $$;
 
 -- Функция для удаления записи из таблицы резюме по её ID
 -- Возвращает 'success' в случае успешного выполнения, или текст ошибки, в случае возникновения таковой
-DROP FUNCTION IF EXISTS delete_record;
 CREATE FUNCTION delete_record(
     IN _id INT
 )

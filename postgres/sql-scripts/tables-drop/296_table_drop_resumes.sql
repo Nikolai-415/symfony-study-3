@@ -1,1 +1,8 @@
+DROP FUNCTION IF EXISTS delete_record;
+DROP FUNCTION IF EXISTS edit_record;
+DROP FUNCTION IF EXISTS add_record;
+DROP FUNCTION IF EXISTS get_record;
+DROP FUNCTION IF EXISTS get_records_pages_number;
+DROP FUNCTION IF EXISTS get_records;
+DROP FUNCTION IF EXISTS generate_where;
 DROP TABLE resumes;

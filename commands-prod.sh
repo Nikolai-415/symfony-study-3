@@ -1,2 +1,2 @@
 . commands.sh
-n415 set prod
+n415 set stopped prod
