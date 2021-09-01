@@ -53,7 +53,8 @@ function n415_execute_command()
             docker build ./postgres -t symfony-study-3_image_postgres:13.4-buster
             return 0
         elif [ "$1" = "project" ]; then
-            docker-compose build
+            n415_execute_command build php
+            n415_execute_command build postgres
             docker pull nginx:1.21.1
             docker pull dpage/pgadmin4:5.6
             return 0
