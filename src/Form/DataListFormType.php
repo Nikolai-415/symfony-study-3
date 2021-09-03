@@ -17,6 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
 
 /**
  * Форма фильтрации и сортировки
@@ -34,10 +35,24 @@ class DataListFormType extends AbstractType
             ->add('filter_id_to', IntegerType::class)
 
             ->add('isFilter_fullName', CheckboxType::class)
-            ->add('filter_fullName', TextType::class)
+            ->add('filter_fullName', TextType::class, [
+                'constraints' => [
+                    new Length([
+                        'max' => 50,
+                        'maxMessage' => 'Максимальная длина текста для поиска: {{ limit }} символов!',
+                    ]),
+                ],
+            ])
 
             ->add('isFilter_about', CheckboxType::class)
-            ->add('filter_about', TextType::class)
+            ->add('filter_about', TextType::class, [
+                'constraints' => [
+                    new Length([
+                        'max' => 100,
+                        'maxMessage' => 'Максимальная длина текста для поиска: {{ limit }} символов!',
+                    ]),
+                ],
+            ])
 
             ->add('isFilter_workExperience', CheckboxType::class)
             ->add('filter_workExperience_from', IntegerType::class)
@@ -49,10 +64,12 @@ class DataListFormType extends AbstractType
 
             ->add('isFilter_birthDate', CheckboxType::class)
             ->add('filter_birthDate_from', BirthdayType::class, array(
-                'data' => new DateTime('1980-01-01')
+                'data' => new DateTime('1980-01-01'),
+                'widget' => 'single_text',
             ))
             ->add('filter_birthDate_to', BirthdayType::class, array(
-                'data' => new DateTime('2000-01-01')
+                'data' => new DateTime('2000-01-01'),
+                'widget' => 'single_text',
             ))
 
             ->add('isFilter_sendingDatetime', CheckboxType::class)
@@ -60,11 +77,13 @@ class DataListFormType extends AbstractType
                 'with_seconds' => true,
                 'years' => $sendingDatetimeYears,
                 'data' => new DateTime('2010-01-01 00:00:00'),
+                'widget' => 'single_text',
             ])
             ->add('filter_sendingDatetime_to', DateTimeType::class, [
                 'with_seconds' => true,
                 'years' => $sendingDatetimeYears,
                 'data' => new DateTime(),
+                'widget' => 'single_text',
             ])
 
             ->add('isFilter_cityToWorkIn', CheckboxType::class)

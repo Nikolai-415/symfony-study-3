@@ -19,6 +19,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Validator\Constraints\File as ConstraintsFile;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\PositiveOrZero;
 
 /**
@@ -31,8 +33,20 @@ class EditDataFormType extends AbstractType
         $sendingDatetimeYears = array();
         for($year = 2000; $year <= 2021; $year++) $sendingDatetimeYears[] = $year;
         
+        $invalid_message = 'Это значение недопустимо!';
+
         $builder
-            ->add('fullName', TextType::class)
+            ->add('fullName', TextType::class, [
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'ФИО должно быть введёно!',
+                    ]),
+                    new Length([
+                        'max' => 255,
+                        'maxMessage' => 'ФИО не может быть больше {{ limit }} символов!',
+                    ]),
+                ],
+            ])
             ->add('about'           , TextareaType::class, [
                 'required' => false,
             ])
@@ -42,6 +56,7 @@ class EditDataFormType extends AbstractType
                         'message' => 'Опыт работы не может быть меньше нуля!',
                     ])
                 ],
+                'invalid_message' => $invalid_message,
             ])
             ->add('desiredSalary', NumberType::class, [
                 'constraints' => [
@@ -49,11 +64,15 @@ class EditDataFormType extends AbstractType
                         'message' => 'Желаемая заработная плата не может быть меньше нуля!',
                     ]),
                 ],
+                'invalid_message' => $invalid_message,
             ])
-            ->add('birthDate', BirthdayType::class)
+            ->add('birthDate', BirthdayType::class, [
+                'widget' => 'single_text',
+            ])
             ->add('sendingDatetime', DateTimeType::class, [
                 'with_seconds' => true,
                 'years' => $sendingDatetimeYears,
+                'widget' => 'single_text',
             ])
             ->add('deleteAvatar', CheckboxType::class, [
                 'required' => false,

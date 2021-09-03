@@ -292,6 +292,8 @@ BEGIN
     );
     RETURN (SELECT 'success');
 EXCEPTION
+	WHEN SQLSTATE '23505' THEN
+		RETURN (SELECT 'Ошибка! Запись с указанным ФИО уже существует!');
     WHEN OTHERS THEN
         DECLARE
             error_message VARCHAR(255);
@@ -360,6 +362,8 @@ BEGIN
         RETURN (SELECT 'success');
     END IF;
 EXCEPTION
+	WHEN SQLSTATE '23505' THEN
+		RETURN (SELECT 'Ошибка! Запись с указанным ФИО уже существует!');
     WHEN OTHERS THEN
         DECLARE
             error_message VARCHAR(255);

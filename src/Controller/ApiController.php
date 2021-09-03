@@ -383,124 +383,135 @@ class ApiController extends AbstractController
         // ----------------------------------------------------------------------------------------------
     
         // ----------------------------------------------------------------------------------------------
+        // Проверка полученных данных
+        // ----------------------------------------------------------------------------------------------
+        if(strlen($new_full_name) > 255) $errors[] = 'Длина ФИО не должна превышать 255 символов!';
+        if($new_work_experience < 0 || $new_work_experience > 100) $errors[] = 'Введите корректный опыт работы!';
+        if($new_desired_salary < 0) $errors[] = 'Введите корректную желаемую заработную плату!';
+        // ----------------------------------------------------------------------------------------------
+
+        // ----------------------------------------------------------------------------------------------
         // Получение данных из БД
         // ----------------------------------------------------------------------------------------------
-        if($id === null)
+        if($errors == null)
         {
-            $conn = $this->getDoctrine()->getConnection();
-            $stmt = $conn->prepare('SELECT add_record(
-                :full_name,
-                :about,
-                :work_experience,
-                :desired_salary,
-                :birth_date,
-                :sending_datetime,
-                :city_to_work_in_id,
-                :desired_vacancy_id,
-                :avatar,
-                :file,
-                :file_name
-            );');
-            $stmt->bindParam(':full_name', $new_full_name);
-            $stmt->bindParam(':about', $new_about);
-            $stmt->bindParam(':work_experience', $new_work_experience);
-            $stmt->bindParam(':desired_salary', $new_desired_salary);
-            $stmt->bindParam(':birth_date', $new_birth_date);
-            $stmt->bindParam(':sending_datetime', $new_sending_datetime);
-            $stmt->bindParam(':city_to_work_in_id', $new_city_to_work_in_id);
-            $stmt->bindParam(':desired_vacancy_id', $new_desired_vacancy_id);
-            $stmt->bindParam(':avatar', $new_avatar);
-            $stmt->bindParam(':file', $new_file);
-            $stmt->bindParam(':file_name', $new_file_name);
+            if($id === null)
+            {
+                $conn = $this->getDoctrine()->getConnection();
+                $stmt = $conn->prepare('SELECT add_record(
+                    :full_name,
+                    :about,
+                    :work_experience,
+                    :desired_salary,
+                    :birth_date,
+                    :sending_datetime,
+                    :city_to_work_in_id,
+                    :desired_vacancy_id,
+                    :avatar,
+                    :file,
+                    :file_name
+                );');
+                $stmt->bindParam(':full_name', $new_full_name);
+                $stmt->bindParam(':about', $new_about);
+                $stmt->bindParam(':work_experience', $new_work_experience);
+                $stmt->bindParam(':desired_salary', $new_desired_salary);
+                $stmt->bindParam(':birth_date', $new_birth_date);
+                $stmt->bindParam(':sending_datetime', $new_sending_datetime);
+                $stmt->bindParam(':city_to_work_in_id', $new_city_to_work_in_id);
+                $stmt->bindParam(':desired_vacancy_id', $new_desired_vacancy_id);
+                $stmt->bindParam(':avatar', $new_avatar);
+                $stmt->bindParam(':file', $new_file);
+                $stmt->bindParam(':file_name', $new_file_name);
 
-            $data_result = $stmt->executeQuery()->fetchAssociative()['add_record'];
-        }
-        else
-        {
-            $conn = $this->getDoctrine()->getConnection();
-            $stmt = $conn->prepare('SELECT edit_record(
-                :id,
+                $data_result = $stmt->executeQuery()->fetchAssociative()['add_record'];
+            }
+            else
+            {
+                $conn = $this->getDoctrine()->getConnection();
+                $stmt = $conn->prepare('SELECT edit_record(
+                    :id,
 
-                :is_full_name,
-                :full_name,
+                    :is_full_name,
+                    :full_name,
 
-                :is_about,
-                :about,
+                    :is_about,
+                    :about,
 
-                :is_work_experience,
-                :work_experience,
+                    :is_work_experience,
+                    :work_experience,
 
-                :is_desired_salary,
-                :desired_salary,
+                    :is_desired_salary,
+                    :desired_salary,
 
-                :is_birth_date,
-                :birth_date,
+                    :is_birth_date,
+                    :birth_date,
 
-                :is_sending_datetime,
-                :sending_datetime,
+                    :is_sending_datetime,
+                    :sending_datetime,
 
-                :is_city_to_work_in_id,
-                :city_to_work_in_id,
+                    :is_city_to_work_in_id,
+                    :city_to_work_in_id,
 
-                :is_desired_vacancy_id,
-                :desired_vacancy_id,
+                    :is_desired_vacancy_id,
+                    :desired_vacancy_id,
 
-                :is_avatar,
-                :avatar,
+                    :is_avatar,
+                    :avatar,
 
-                :is_file,
-                :file,
-                :file_name
-            );');
-            $stmt->bindParam(':id', $id);
+                    :is_file,
+                    :file,
+                    :file_name
+                );');
+                $stmt->bindParam(':id', $id);
 
-            $stmt->bindParam(':is_full_name', $is_full_name, PDO::PARAM_BOOL);
-            $stmt->bindParam(':full_name', $new_full_name);
+                $stmt->bindParam(':is_full_name', $is_full_name, PDO::PARAM_BOOL);
+                $stmt->bindParam(':full_name', $new_full_name);
 
-            $stmt->bindParam(':is_about', $is_about, PDO::PARAM_BOOL);
-            $stmt->bindParam(':about', $new_about);
+                $stmt->bindParam(':is_about', $is_about, PDO::PARAM_BOOL);
+                $stmt->bindParam(':about', $new_about);
 
-            $stmt->bindParam(':is_work_experience', $is_work_experience, PDO::PARAM_BOOL);
-            $stmt->bindParam(':work_experience', $new_work_experience);
+                $stmt->bindParam(':is_work_experience', $is_work_experience, PDO::PARAM_BOOL);
+                $stmt->bindParam(':work_experience', $new_work_experience);
 
-            $stmt->bindParam(':is_desired_salary', $is_desired_salary, PDO::PARAM_BOOL);
-            $stmt->bindParam(':desired_salary', $new_desired_salary);
+                $stmt->bindParam(':is_desired_salary', $is_desired_salary, PDO::PARAM_BOOL);
+                $stmt->bindParam(':desired_salary', $new_desired_salary);
 
-            $stmt->bindParam(':is_birth_date', $is_birth_date, PDO::PARAM_BOOL);
-            $stmt->bindParam(':birth_date', $new_birth_date);
+                $stmt->bindParam(':is_birth_date', $is_birth_date, PDO::PARAM_BOOL);
+                $stmt->bindParam(':birth_date', $new_birth_date);
 
-            $stmt->bindParam(':is_sending_datetime', $is_sending_datetime, PDO::PARAM_BOOL);
-            $stmt->bindParam(':sending_datetime', $new_sending_datetime);
+                $stmt->bindParam(':is_sending_datetime', $is_sending_datetime, PDO::PARAM_BOOL);
+                $stmt->bindParam(':sending_datetime', $new_sending_datetime);
 
-            $stmt->bindParam(':is_city_to_work_in_id', $is_city_to_work_in_id, PDO::PARAM_BOOL);
-            $stmt->bindParam(':city_to_work_in_id', $new_city_to_work_in_id);
+                $stmt->bindParam(':is_city_to_work_in_id', $is_city_to_work_in_id, PDO::PARAM_BOOL);
+                $stmt->bindParam(':city_to_work_in_id', $new_city_to_work_in_id);
 
-            $stmt->bindParam(':is_desired_vacancy_id', $is_desired_vacancy_id, PDO::PARAM_BOOL);
-            $stmt->bindParam(':desired_vacancy_id', $new_desired_vacancy_id);
+                $stmt->bindParam(':is_desired_vacancy_id', $is_desired_vacancy_id, PDO::PARAM_BOOL);
+                $stmt->bindParam(':desired_vacancy_id', $new_desired_vacancy_id);
 
-            $stmt->bindParam(':is_avatar', $is_avatar, PDO::PARAM_BOOL);
-            $stmt->bindParam(':avatar', $new_avatar);
+                $stmt->bindParam(':is_avatar', $is_avatar, PDO::PARAM_BOOL);
+                $stmt->bindParam(':avatar', $new_avatar);
 
-            $stmt->bindParam(':is_file', $is_file, PDO::PARAM_BOOL);
-            $stmt->bindParam(':file', $new_file);
-            $stmt->bindParam(':file_name', $new_file_name);
+                $stmt->bindParam(':is_file', $is_file, PDO::PARAM_BOOL);
+                $stmt->bindParam(':file', $new_file);
+                $stmt->bindParam(':file_name', $new_file_name);
 
-            $data_result = $stmt->executeQuery()->fetchAssociative()['edit_record'];
-        }
-        // ----------------------------------------------------------------------------------------------
+                $data_result = $stmt->executeQuery()->fetchAssociative()['edit_record'];
+            }
+            // ----------------------------------------------------------------------------------------------
 
-        // Преобразование данных для передачи в JSON
-        if($data_result != 'success')
-        {
-            $errors[] = $data_result;
-            $data_result = null;
+            // Если возникли ошибки на стороне SQL - добавляем их текст в массив ошибок
+            if($data_result != 'success')
+            {
+                $errors[] = $data_result;
+                $data_result = null;
+            }
         }
 
         // Формирование JSON
         $json = json_encode(
             array(
                 'data' => array(
-                    'result' => $data_result
+                    'result' => $data_result ?? null
                 ),
                 'errors' => $errors
             ), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT

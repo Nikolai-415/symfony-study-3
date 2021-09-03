@@ -367,7 +367,7 @@ class DataController extends AbstractController
         /**
          * @var string[] Массив с текстами ошибок - в него заносится ошибки в случае возникновения таковых
          */
-        $errors_texts = null;
+        $errors_texts = array();
 
         /**
          * @var bool Была ли использована форма фильтрации и сортировки
@@ -487,6 +487,17 @@ class DataController extends AbstractController
 
             $is_form_used = true;
         }
+        else if($form->isSubmitted() && !$form->isValid())
+        {
+            $is_form_invalid = true;
+        }
+
+        // Сохранение настроек фильтрации, сортировки и паджинации в сессию для последующей загрузки после добавления/изменения записи
+        $routeName = $request->attributes->get('_route');
+        $routeParameters = $request->attributes->get('_route_params') + $request->query->all();
+        $data_list_page_path = $this->generateUrl($routeName, $routeParameters);
+        $session = $request->getSession();
+        $session->set('data_list_page_path', $data_list_page_path);
 
         // Обращение к API
         $resumes_and_pages_number = $this->getResumesAndPagesNumberFromApi($cityRepository, $vacancyRepository, $page, $cities, $vacancies, $errors_texts, $post_fields);
@@ -507,6 +518,7 @@ class DataController extends AbstractController
             'resumes' => $resumes,
             'form' => $form->createView(),
             'is_form_used' => $is_form_used,
+            'is_form_invalid' => $is_form_invalid ?? false,
             'current_page' => $page,
             'pages_number' => $pages_number,
             'pages_at_side' => 3, // Количество страниц, отображающихся в начале и в конце списка паджинации, а также слева и справа от текущей страницы
@@ -526,14 +538,17 @@ class DataController extends AbstractController
         /**
          * @var string[] Массив с текстами ошибок - в него заносится ошибки в случае возникновения таковых
          */
-        $errors_texts = null;
+        $errors_texts = array();
+
+        /**
+         * @var string[] Массив с текстами ошибок отправки формы
+         */
+        $form_errors_texts = array();
 
         /**
          * @var bool Идёт ли изменение существующей записи
          */
         $is_edit = false;
-
-        $success_message = null;
 
         // ----------------------------------------------------------------------------------------------
         // Создание и обработка формы добавления нового или изменения существующего резюме
@@ -619,15 +634,22 @@ class DataController extends AbstractController
                 'file' => $resume->getFile(),
                 'file_name' => $resume->getFileName()
             ));
+            
+            if($json_data->errors != null)
+            {
+                $form_errors_texts += $json_data->errors;
+            }
 
             // Если запрос к API был успешным
-            if(($errors_texts == null) && ($json_data->data->result == 'success'))
+            if(($errors_texts == null) && ($form_errors_texts == null) && ($json_data->data->result == 'success'))
             {
-                if($id !== null) // Если идёт изменение записи
+                // Загрузка настроек фильтрации, сортировки и паджинации из сессии и перенаправление
+                $session = $request->getSession();
+                if($data_list_page_path = $session->get('data_list_page_path'))
                 {
-                    $success_message = 'Запись успешно изменена!';
+                    return $this->redirect($data_list_page_path);
                 }
-                else // Если идёт добавление записи
+                else
                 {
                     return $this->redirectToRoute('data_list');
                 }
@@ -636,10 +658,11 @@ class DataController extends AbstractController
 
         return $this->render('data/edit_data.html.twig', [
             'errors_texts' => $errors_texts,
+            'form_errors_texts' => $form_errors_texts,
             'is_edit' => $is_edit,
             'resume' => $resume,
             'form' => $form->createView(),
-            'success_message' => $success_message,
+            'data_list_page_path' => $request->getSession()->get('data_list_page_path') ?? $this->generateUrl('data_list', array('page' => 1)),
         ]);
     }
 
@@ -656,7 +679,7 @@ class DataController extends AbstractController
         /**
          * @var string[] Массив с текстами ошибок - в него заносится ошибки в случае возникновения таковых
          */
-        $errors_texts = null;
+        $errors_texts = array();
 
         // Получение резюме по его ID через API
         $resume = $this->getResumeFromApi($cityRepository, $vacancyRepository, $id, $cities, $vacancies, $errors_texts);
@@ -680,6 +703,7 @@ class DataController extends AbstractController
         return $this->render('data/delete_data.html.twig', [
             'errors_texts' => $errors_texts,
             'form' => $form->createView(),
+            'data_list_page_path' => $request->getSession()->get('data_list_page_path') ?? $this->generateUrl('data_list', array('page' => 1)),
         ]);
     }
 
@@ -695,7 +719,7 @@ class DataController extends AbstractController
         /**
          * @var string[] Массив с текстами ошибок - в него заносится ошибки в случае возникновения таковых
          */
-        $errors_texts = null;
+        $errors_texts = array();
 
         // Получение резюме по его ID через API
         $resume = $this->getResumeFromApi($cityRepository, $vacancyRepository, $id, $cities, $vacancies, $errors_texts);

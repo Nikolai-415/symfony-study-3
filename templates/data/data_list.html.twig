@@ -233,8 +233,8 @@
                         <td>{{ (resume.getAbout() ?? '') == '' ? 'Нет информации' : resume.getAbout() }}</td>
                         <td>{{ resume.getWorkExperience() }}</td>
                         <td>{{ resume.getDesiredSalary() }}</td>
-                        <td>{{ resume.getBirthDate().format('Y-m-d') }}</td>
-                        <td>{{ resume.getSendingDatetime().format('Y-m-d H:i:s') }}</td>
+                        <td>{{ resume.getBirthDate().format('d.m.Y') }}</td>
+                        <td>{{ resume.getSendingDatetime().format('d.m.Y H:i:s') }}</td>
                         <td>{{ resume.getCityToWorkIn().getName() }}</td>
                         <td>{{ resume.getDesiredVacancy().getName() }}</td>
                         <td>
@@ -287,4 +287,14 @@
         pages_number: pages_number,
         pages_at_side: pages_at_side,
     })}}
+{% endblock %}
+
+{# Если были ошибки в форме - показываем её #}
+{% block js_after_footer %}
+    {{ parent() }}
+    {% if is_form_invalid %}
+        <script>
+            document.onload = showOrHideFormSortAndOrder();
+        </script>
+    {% endif %}
 {% endblock %}

@@ -5,7 +5,7 @@
 {% block header %}Удаление записи{% endblock %}
 
 {% block content %}
-    <a href="{{ path('data_list') }}" class="btn-warning btn mb-2">Назад</a>
+    <a href="{{ data_list_page_path }}" class="btn-warning btn mb-2">Назад, к списку всех записей</a>
     {{ form_start(form, {
             attr: { class: 'w-25 mx-auto' },
     })}}

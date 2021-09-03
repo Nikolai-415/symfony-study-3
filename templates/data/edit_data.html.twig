@@ -17,12 +17,17 @@
 {% endblock %}
 
 {% block content %}
-    <a href="{{ path('data_list') }}" class="btn-warning btn mb-2">Назад к списку всех записей</a>
+    <a href="{{ data_list_page_path }}" class="btn-warning btn mb-2">Назад, к списку всех записей</a>
     {{ form_start(form, {
             attr: { class: 'w-75 mx-auto' },
     })}}
-        {% if success_message ?? false %}
-            <div class="alert alert-success">{{ success_message }}</div>
+        {% if form_errors_texts ?? false %}
+            <div class="alert alert-danger w-75 mx-auto my-2 text-center">
+                    При попытке отправки формы возникли следующие ошибки:<br/>
+                    {% for error_text in form_errors_texts %}
+                        <b>{{ error_text }}</b><br/>
+                    {% endfor %}
+            </div>
         {% endif %}
 
         {{  form_row(form.fullName, {
