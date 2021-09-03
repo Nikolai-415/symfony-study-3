@@ -630,8 +630,10 @@ class DataController extends AbstractController
                 'sending_datetime' => $resume->getSendingDatetime()->format('Y-m-d H:i:s'),
                 'city_to_work_in_id' => $resume->getCityToWorkIn()->getId(),
                 'desired_vacancy_id' => $resume->getDesiredVacancy()->getId(),
+                'is_delete_avatar' => $deleteAvatar,
                 'avatar' => $resume->getAvatar(),
                 'file' => $resume->getFile(),
+                'is_delete_file' => $deleteFile,
                 'file_name' => $resume->getFileName()
             ));
             

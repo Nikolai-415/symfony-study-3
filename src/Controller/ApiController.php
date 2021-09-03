@@ -374,10 +374,10 @@ class ApiController extends AbstractController
         $is_desired_vacancy_id = $request->request->has('desired_vacancy_id');
         $new_desired_vacancy_id = $is_desired_vacancy_id ? $request->get('desired_vacancy_id') : null;
         
-        $is_avatar = $request->request->has('avatar');
+        $is_avatar = $request->request->has('avatar') || $request->request->has('is_delete_avatar');
         $new_avatar = $is_avatar ? $request->get('avatar') : null;
         
-        $is_file = $request->request->has('file') && $request->request->has('file_name');
+        $is_file = $request->request->has('file') && $request->request->has('file_name') || $request->request->has('is_delete_file');
         $new_file = $is_file ? $request->get('file') : null;
         $new_file_name = $is_file ? $request->get('file_name') : null;
         // ----------------------------------------------------------------------------------------------
