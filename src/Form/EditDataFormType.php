@@ -81,12 +81,9 @@ class EditDataFormType extends AbstractType
             ->add('avatar', FileType::class, [
                 'required' => false,
                 'mapped' => false,
-
-                // unmapped fields can't define their validation using annotations
-                // in the associated entity, so you can use the PHP constraint classes
                 'constraints' => [
                     new ConstraintsFile([
-                        'maxSize' => '1024k',
+                        'maxSize' => '5120k',
                         'mimeTypes' => [
                             'image/bmp',
                             'image/gif',
@@ -94,6 +91,7 @@ class EditDataFormType extends AbstractType
                             'image/png',
                         ],
                         'mimeTypesMessage' => 'Разрешённые форматы: .bmp, .gif, .jpeg, .jpg, .png.',
+                        'maxSizeMessage' => 'Максимальный размер файла: 5 мб!'
                     ])
                 ],
             ])
@@ -104,6 +102,12 @@ class EditDataFormType extends AbstractType
             ->add('file', FileType::class, [
                 'required' => false,
                 'mapped' => false,
+                'constraints' => [
+                    new ConstraintsFile([
+                        'maxSize' => '20480k',
+                        'maxSizeMessage' => 'Максимальный размер файла: 20 мб!'
+                    ])
+                ],
             ])
             ->add('cityToWorkIn', EntityType::class, [
                 'class' => City::class,
