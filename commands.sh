@@ -184,7 +184,7 @@ function n415_execute_command()
             if [ "$2" = "dev" ]; then
                 n415_app_env="dev"
                 cp "./config/ini/php.ini-development" "./config/ini/php.ini"
-                echo "Установлено окружение Production!"
+                echo "Установлено окружение Development!"
                 return 0
             elif [ "$2" = "prod" ]; then
                 n415_app_env="prod"
