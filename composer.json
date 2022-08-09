@@ -43,7 +43,11 @@
         "preferred-install": {
             "*": "dist"
         },
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "symfony/flex": true,
+            "symfony/runtime": true
+        }
     },
     "autoload": {
         "psr-4": {
@@ -66,9 +70,11 @@
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
         },
         "post-install-cmd": [
+            "Composer\\Config::disableProcessTimeout",
             "@auto-scripts"
         ],
         "post-update-cmd": [
+            "Composer\\Config::disableProcessTimeout",
             "@auto-scripts"
         ]
     },

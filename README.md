@@ -1,4 +1,4 @@
-<h1>symfony-study-3</h1>
+<h1>study-symfony-attempt-3</h1>
 
 Тестовый проект для изучения PHP-фреймворка Symfony
 
@@ -6,13 +6,13 @@
 
 <ol>
   <li><i><b>Docker-Compose v.3.9</b></i>;</li>
-  <li><i><b>PHP v.8.0.9</b></i>;</li>
+  <li><i><b>PHP v.8.1.9</b></i>;</li>
   <li><i><b>Symfony v.5.3.6</b></i>;</li>
-  <li><i><b>Xdebug v.3.0.4</b></i>;</li>
-  <li><i><b>Composer v.2.1.5</b></i>;</li>
-  <li><i><b>Nginx v.1.21.1</b></i>;</li>
-  <li><i><b>PostgreSQL v.13.4</b></i>;</li>
-  <li><i><b>pgAdmin4 v.5.6</b></i>;</li>
+  <li><i><b>Xdebug v.3.1.5</b></i>;</li>
+  <li><i><b>Composer v.2.3.10</b></i>;</li>
+  <li><i><b>Nginx v.1.23.1</b></i>;</li>
+  <li><i><b>PostgreSQL v.14.4</b></i>;</li>
+  <li><i><b>pgAdmin4 v.6.12</b></i>;</li>
   <li><i><b>Bootstrap v.5.0.2</b></i>.</li>
 </ol>
 
@@ -135,7 +135,7 @@
   <li>Очистить проект командой:<br/>
   <code>n415 clear project</code>
   </li>
-  <li>Конфигурация проекта использует образы: <i><b>nginx:1.21.1</b></i> и <i><b>dpage/pgadmin4:5.6</b></i>. Если они больше нигде не используются, то и их удалить соответствующими командами:<br/>
-  <code>docker rmi nginx:1.21.1</code><br/>
-  <code>docker rmi dpage/pgadmin4:5.6</code></li>
+  <li>Конфигурация проекта использует образы: <i><b>nginx:1.23.1</b></i> и <i><b>dpage/pgadmin4:6.12</b></i>. Если они больше нигде не используются, то и их удалить соответствующими командами:<br/>
+  <code>docker rmi nginx:1.23.1</code><br/>
+  <code>docker rmi dpage/pgadmin4:6.12</code></li>
 </ol>

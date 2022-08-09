@@ -5,10 +5,10 @@ function n415_sql_execute()
     
     echo "Выполнение SQL файлов из директории $path/$folder_name/..."
 
-    for file_name in $(docker exec symfony-study-3_container_postgres sh -c "find $path/$folder_name/*.sql -maxdepth 1 -printf \"%f\n\""); do
+    for file_name in $(docker exec study-symfony-attempt-3.container.postgres sh -c "find $path/$folder_name/*.sql -maxdepth 1 -printf \"%f\n\""); do
         command='psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f '"$path/$folder_name/$file_name"
         echo "Выполнение файла "$file_name"..."
-        docker exec symfony-study-3_container_postgres sh -c "$command"
+        docker exec study-symfony-attempt-3.container.postgres sh -c "$command"
     done
 }
 
@@ -48,20 +48,19 @@ function n415_execute_command()
         if [ "$1" = "php" ]; then
             echo "Сборка PHP..."
             n415_execute_command set stopped $n415_app_env
-            docker build . -t symfony-study-3_image_php:8.0.9-fpm-buster
+            docker-compose build php || return 1
             echo "PHP собран!"
             return 0
         elif [ "$1" = "postgres" ]; then
             echo "Сборка Postgres..."
-            docker build ./postgres -t symfony-study-3_image_postgres:13.4-buster
+            docker-compose build postgres || return 1
             echo "Postgres собран!"
             return 0
         elif [ "$1" = "project" ]; then
             echo "Сборка проекта..."
-            n415_execute_command build php
-            n415_execute_command build postgres
-            docker pull nginx:1.21.1
-            docker pull dpage/pgadmin4:5.6
+            docker-compose build || return 1
+            docker pull nginx:1.23.1 || return 1
+            docker pull dpage/pgadmin4:6.12 || return 1
             echo "Проект собран!"
             return 0
         else
@@ -70,20 +69,20 @@ function n415_execute_command()
     elif [ "$command" = "rebuild" ]; then
         if [ "$1" = "php" ]; then
             echo "Пересборка PHP..."
-            n415_execute_command clear php
-            n415_execute_command build php
+            n415_execute_command clear php || return 1
+            n415_execute_command build php || return 1
             echo "PHP пересобран!"
             return 0
         elif [ "$1" = "postgres" ]; then
             echo "Пересборка Postgres..."
-            n415_execute_command clear postgres
-            n415_execute_command build postgres
+            n415_execute_command clear postgres || return 1
+            n415_execute_command build postgres || return 1
             echo "Postgres пересобран!"
             return 0
         elif [ "$1" = "project" ]; then
             echo "Пересборка проекта..."
-            n415_execute_command clear project
-            n415_execute_command build project
+            n415_execute_command clear project || return 1
+            n415_execute_command build project || return 1
             echo "Проект пересобран!"
             return 0
         else
@@ -91,35 +90,35 @@ function n415_execute_command()
         fi
     elif [ "$command" = "up" ]; then
             echo "Запуск системы..."
-            docker-compose up -d
-            docker exec symfony-study-3_container_php sh -c "cd .. && composer dump-env $n415_app_env && php bin/console cache:clear"
+            docker-compose up -d || return 1
+            docker exec study-symfony-attempt-3.container.php sh -c "cd .. && composer dump-env $n415_app_env && php bin/console cache:clear"
             echo "Система запущена! Адрес: http:\\\\localhost\\"
             return 0
     elif [ "$command" = "down" ]; then
             echo "Остановка системы..."
-            docker-compose down
+            docker-compose down || return 1
             echo "Система остановлена!"
             return 0
     elif [ "$command" = "restart" ]; then
             echo "Перезапуск системы..."
-            n415_execute_command down
-            n415_execute_command up
+            n415_execute_command down || return 1
+            n415_execute_command up || return 1
             echo "Система перезапущена!"
             return 0
     elif [ "$command" = "clear" ]; then
         if [ "$1" = "php" ]; then
             echo "Очистка PHP..."
-            docker volume rm symfony-study-3_volume_php-var
-            docker volume rm symfony-study-3_volume_php-vendor
-            docker rmi symfony-study-3_image_php:8.0.9-fpm-buster
+            docker volume rm study-symfony-attempt-3.volume.php-var
+            docker volume rm study-symfony-attempt-3.volume.php-vendor
+            docker rmi study-symfony-attempt-3/image/php:1.0.0
             docker builder prune -af
             echo "PHP очищен!"
             return 0
         elif [ "$1" = "postgres" ]; then
             echo "Очистка Postgres..."
-            docker volume rm symfony-study-3_volume_postgres-data
-            docker volume rm symfony-study-3_volume_pgadmin-data
-            docker rmi symfony-study-3_image_postgres:13.4-buster
+            [ -d ./postgres/data ] && rm -r ./postgres/data
+            [ -d ./pgadmin/data ] && rm -r ./pgadmin/data
+            docker rmi study-symfony-attempt-3/image/postgres:1.0.0
             docker builder prune -af
             echo "Postgres очищен!"
             return 0
@@ -168,13 +167,13 @@ function n415_execute_command()
             if [ "$2" = "dev" ]; then
                 n415_app_env="dev"
                 cp "./config/ini/php.ini-development" "./config/ini/php.ini"
-                docker exec symfony-study-3_container_php sh -c "cd .. && composer dump-env $n415_app_env && php bin/console cache:clear"
+                docker exec study-symfony-attempt-3.container.php sh -c "cd .. && composer dump-env $n415_app_env && php bin/console cache:clear"
                 echo "Установлено окружение Development! Необходимо перезапустить проект. Команда: n415 restart."
                 return 0
             elif [ "$2" = "prod" ]; then
                 n415_app_env="prod"
                 cp "./config/ini/php.ini-production" "./config/ini/php.ini"
-                docker exec symfony-study-3_container_php sh -c "cd .. && composer dump-env $n415_app_env && php bin/console cache:clear"
+                docker exec study-symfony-attempt-3.container.php sh -c "cd .. && composer dump-env $n415_app_env && php bin/console cache:clear"
                 echo "Установлено окружение Production! Необходимо перезапустить проект. Команда: n415 restart."
                 return 0
             else

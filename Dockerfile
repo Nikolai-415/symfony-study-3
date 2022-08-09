@@ -1,7 +1,14 @@
-FROM php:8.0.9-fpm-buster
+# Образ PHP
+ARG PHP_VERSION="8.1.9"
+FROM php:${PHP_VERSION}-fpm-bullseye
 
 # Корень проекта
 ARG APP_ROOT="/var/www/html"
+# Версия Xdebug
+ARG XDEBUG_VERSION="3.1.5"
+# Версия Composer
+ARG COMPOSER_VERSION="2.3.10"
+
 WORKDIR ${APP_ROOT}
 COPY . ${APP_ROOT}
 
@@ -12,7 +19,7 @@ RUN chmod -R 777 ${APP_ROOT}
 COPY ./config/ini /usr/local/etc/php
 
 # Скачивание и включение XDebug
-RUN pecl install xdebug-3.0.4
+RUN pecl install "xdebug-${XDEBUG_VERSION}"
 
 # Необходимо для скачиваний расширений
 RUN apt-get update
@@ -30,14 +37,16 @@ RUN docker-php-ext-install intl
 
 # Установка Composer'а
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-RUN php -r "if (hash_file('sha384', 'composer-setup.php') === '756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-RUN php composer-setup.php --version=2.1.5 --filename=composer --install-dir=/usr/local/bin
+RUN php -r "if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+RUN php composer-setup.php --version=${COMPOSER_VERSION} --filename=composer --install-dir=/usr/local/bin
 RUN php -r "unlink('composer-setup.php');"
 
 # Необходимо для распаковки пакетов при выполнении команды "RUN composer install"
 RUN apt install unzip
 
 # Проверка и установка пакетов
-RUN composer install && composer dump-autoload
+RUN composer update
+RUN composer install
+RUN composer dump-autoload
 
 WORKDIR ${APP_ROOT}/public

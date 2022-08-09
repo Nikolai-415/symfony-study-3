@@ -2,17 +2,13 @@ version: '3.9'
 
 volumes:
   php-var:
-    name: ${APP_NAME}_volume_php-var
+    name: ${COMPOSE_PROJECT_NAME:-study-symfony-attempt-3}.volume.php-var
   php-vendor:
-    name: ${APP_NAME}_volume_php-vendor
-  postgres-data:
-    name: ${APP_NAME}_volume_postgres-data
-  pgadmin-data:
-    name: ${APP_NAME}_volume_pgadmin-data
+    name: ${COMPOSE_PROJECT_NAME:-study-symfony-attempt-3}.volume.php-vendor
 
 networks:
-  network:
-    name: ${APP_NAME}_network
+  inner-network:
+    name: ${COMPOSE_PROJECT_NAME:-study-symfony-attempt-3}/network
 
 services:
   php:
@@ -21,65 +17,63 @@ services:
         - APP_ROOT=${APP_ROOT}
       context: .
       dockerfile: Dockerfile
-    container_name: ${APP_NAME}_container_php
-    extra_hosts:
-      - host.docker.internal:host-gateway
-    image: ${APP_NAME}_image_php:8.0.9-fpm-buster
-    networks:
-      - network
+    image: ${COMPOSE_PROJECT_NAME:-study-symfony-attempt-3}/image/php:1.0.0
+    container_name: ${COMPOSE_PROJECT_NAME:-study-symfony-attempt-3}.container.php
     volumes:
       - .:${APP_ROOT}
       - ./config/ini/php.ini:/usr/local/etc/php/php.ini
       - ./config/ini/conf.d/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
       - php-var:${APP_ROOT}/var
       - php-vendor:${APP_ROOT}/vendor
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      - inner-network
 
   nginx:
-    container_name: ${APP_NAME}_container_nginx
+    image: nginx:1.23.1-alpine
+    container_name: ${COMPOSE_PROJECT_NAME:-study-symfony-attempt-3}.container.nginx
+    hostname: study-symfony-attempt-3
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - inner-network
     depends_on:
       - php
-    image: nginx:1.21.1
-    networks:
-      - network
     ports:
       - ${APP_PORT}:80
-    volumes:
-      - .:${APP_ROOT}
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
 
   postgres:
     build:
-      args:
-        - APP_ROOT=${APP_ROOT}
       context: ./postgres
       dockerfile: Dockerfile
-    container_name: ${APP_NAME}_container_postgres
+    image: ${COMPOSE_PROJECT_NAME:-study-symfony-attempt-3}/image/postgres:1.0.0
+    container_name: ${COMPOSE_PROJECT_NAME:-study-symfony-attempt-3}.container.postgres
     environment:
       - POSTGRES_HOST=${DBMS_HOST}
       - POSTGRES_PORT=${DBMS_PORT}
       - POSTGRES_USER=${DBMS_USER_NAME}
       - POSTGRES_PASSWORD=${DBMS_USER_PASSWORD}
       - POSTGRES_DB=${DBMS_DB_NAME}
-    image: ${APP_NAME}_image_postgres:13.4-buster
-    networks:
-      - network
-    ports:
-      - ${DBMS_PORT}:5432
     volumes:
       - ./postgres/sql-scripts:/var/lib/postgresql/sql-scripts
-      - postgres-data:/var/lib/postgresql/data
+      - ${POSTGRES_DATA_LOCAL_PATH:-./postgres/data}:/var/lib/postgresql/data
+    networks:
+      - inner-network
+    ports:
+      - ${DBMS_PORT}:5432
 
   pgadmin:
-    container_name: ${APP_NAME}_container_pgadmin
-    depends_on:
-      - postgres
+    image: dpage/pgadmin4:6.12
     environment:
       - PGADMIN_DEFAULT_EMAIL=${DBMS_GUI_USER_EMAIL}
       - PGADMIN_DEFAULT_PASSWORD=${DBMS_GUI_USER_PASSWORD}
-    image: dpage/pgadmin4:5.6
+    container_name: ${COMPOSE_PROJECT_NAME:-study-symfony-attempt-3}.container.pgadmin
+    volumes:
+      - ${PGADMIN_DATA_LOCAL_PATH:-./pgadmin/data}:/var/lib/pgadmin
     networks:
-      - network
+      - inner-network
+    depends_on:
+      - postgres
     ports:
       - ${DBMS_GUI_PORT}:80
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin

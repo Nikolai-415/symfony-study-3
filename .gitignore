@@ -9,3 +9,10 @@
 ###< symfony/framework-bundle ###
 
 /config/ini/php.ini
+
+# Папки с данными PostgreSQL и PGAdmin
+/postgres/data
+/pgadmin/data
+
+# Папка PhpStorm
+/.idea
