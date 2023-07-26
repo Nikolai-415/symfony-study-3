@@ -7,10 +7,10 @@ function n2038_sql_execute()
     
     echo "Выполнение SQL файлов из директории $path/$folder_name/..."
 
-    for file_name in $(docker exec study-symfony-attempt-3.container.postgres sh -c "find $path/$folder_name/*.sql -maxdepth 1 -printf \"%f\n\""); do
+    for file_name in $(docker exec working_with_resumes.container.postgres sh -c "find $path/$folder_name/*.sql -maxdepth 1 -printf \"%f\n\""); do
         command='psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f '"$path/$folder_name/$file_name"
         echo "Выполнение файла "$file_name"..."
-        docker exec study-symfony-attempt-3.container.postgres sh -c "$command"
+        docker exec working_with_resumes.container.postgres sh -c "$command"
     done
 }
 
@@ -93,7 +93,7 @@ function n2038_execute_command()
     elif [ "$command" = "up" ]; then
             echo "Запуск системы..."
             docker-compose up -d || return 1
-            docker exec study-symfony-attempt-3.container.php sh -c "cd .. && composer dump-env $n2038_app_env && php bin/console cache:clear"
+            docker exec working_with_resumes.container.php sh -c "cd .. && composer dump-env $n2038_app_env && php bin/console cache:clear"
             echo "Система запущена! Адрес: http:\\\\localhost\\"
             return 0
     elif [ "$command" = "down" ]; then
@@ -110,9 +110,9 @@ function n2038_execute_command()
     elif [ "$command" = "clear" ]; then
         if [ "$1" = "php" ]; then
             echo "Очистка PHP..."
-            docker volume rm study-symfony-attempt-3.volume.php-var
-            docker volume rm study-symfony-attempt-3.volume.php-vendor
-            docker rmi study-symfony-attempt-3/image/php:1.0.0
+            docker volume rm working_with_resumes.volume.php-var
+            docker volume rm working_with_resumes.volume.php-vendor
+            docker rmi working_with_resumes/image/php:1.0.0
             docker builder prune -af
             echo "PHP очищен!"
             return 0
@@ -120,7 +120,7 @@ function n2038_execute_command()
             echo "Очистка Postgres..."
             [ -d ./postgres/data ] && rm -r ./postgres/data
             [ -d ./pgadmin/data ] && rm -r ./pgadmin/data
-            docker rmi study-symfony-attempt-3/image/postgres:1.0.0
+            docker rmi working_with_resumes/image/postgres:1.0.0
             docker builder prune -af
             echo "Postgres очищен!"
             return 0
@@ -169,13 +169,13 @@ function n2038_execute_command()
             if [ "$2" = "dev" ]; then
                 n2038_app_env="dev"
                 cp "./config/ini/php.ini-development" "./config/ini/php.ini"
-                docker exec study-symfony-attempt-3.container.php sh -c "cd .. && composer dump-env $n2038_app_env && php bin/console cache:clear"
+                docker exec working_with_resumes.container.php sh -c "cd .. && composer dump-env $n2038_app_env && php bin/console cache:clear"
                 echo "Установлено окружение Development! Необходимо перезапустить проект. Команда: n2038 restart."
                 return 0
             elif [ "$2" = "prod" ]; then
                 n2038_app_env="prod"
                 cp "./config/ini/php.ini-production" "./config/ini/php.ini"
-                docker exec study-symfony-attempt-3.container.php sh -c "cd .. && composer dump-env $n2038_app_env && php bin/console cache:clear"
+                docker exec working_with_resumes.container.php sh -c "cd .. && composer dump-env $n2038_app_env && php bin/console cache:clear"
                 echo "Установлено окружение Production! Необходимо перезапустить проект. Команда: n2038 restart."
                 return 0
             else

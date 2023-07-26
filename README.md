@@ -1,4 +1,4 @@
-# study-symfony-attempt-3
+# working_with_resumes
 
 Тестовый проект для изучения PHP-фреймворка Symfony
 

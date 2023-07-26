@@ -2,13 +2,13 @@ version: '3.7'
 
 volumes:
   php-var:
-    name: ${COMPOSE_PROJECT_NAME:-study-symfony-attempt-3}.volume.php-var
+    name: ${COMPOSE_PROJECT_NAME:-working_with_resumes}.volume.php-var
   php-vendor:
-    name: ${COMPOSE_PROJECT_NAME:-study-symfony-attempt-3}.volume.php-vendor
+    name: ${COMPOSE_PROJECT_NAME:-working_with_resumes}.volume.php-vendor
 
 networks:
   inner-network:
-    name: ${COMPOSE_PROJECT_NAME:-study-symfony-attempt-3}/network
+    name: ${COMPOSE_PROJECT_NAME:-working_with_resumes}/network
 
 services:
   php:
@@ -17,8 +17,8 @@ services:
         - APP_ROOT=${APP_ROOT}
       context: .
       dockerfile: Dockerfile
-    image: ${COMPOSE_PROJECT_NAME:-study-symfony-attempt-3}/image/php:1.0.0
-    container_name: ${COMPOSE_PROJECT_NAME:-study-symfony-attempt-3}.container.php
+    image: ${COMPOSE_PROJECT_NAME:-working_with_resumes}/image/php:1.0.0
+    container_name: ${COMPOSE_PROJECT_NAME:-working_with_resumes}.container.php
     volumes:
       - .:${APP_ROOT}
       - ./config/ini/php.ini:/usr/local/etc/php/php.ini
@@ -32,8 +32,8 @@ services:
 
   nginx:
     image: nginx:1.23.1-alpine
-    container_name: ${COMPOSE_PROJECT_NAME:-study-symfony-attempt-3}.container.nginx
-    hostname: study-symfony-attempt-3
+    container_name: ${COMPOSE_PROJECT_NAME:-working_with_resumes}.container.nginx
+    hostname: working_with_resumes
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./public:/var/www/html/public
@@ -48,8 +48,8 @@ services:
     build:
       context: ./postgres
       dockerfile: Dockerfile
-    image: ${COMPOSE_PROJECT_NAME:-study-symfony-attempt-3}/image/postgres:1.0.0
-    container_name: ${COMPOSE_PROJECT_NAME:-study-symfony-attempt-3}.container.postgres
+    image: ${COMPOSE_PROJECT_NAME:-working_with_resumes}/image/postgres:1.0.0
+    container_name: ${COMPOSE_PROJECT_NAME:-working_with_resumes}.container.postgres
     environment:
       - POSTGRES_HOST=${DBMS_HOST}
       - POSTGRES_PORT=${DBMS_PORT}
@@ -69,7 +69,7 @@ services:
     environment:
       - PGADMIN_DEFAULT_EMAIL=${DBMS_GUI_USER_EMAIL}
       - PGADMIN_DEFAULT_PASSWORD=${DBMS_GUI_USER_PASSWORD}
-    container_name: ${COMPOSE_PROJECT_NAME:-study-symfony-attempt-3}.container.pgadmin
+    container_name: ${COMPOSE_PROJECT_NAME:-working_with_resumes}.container.pgadmin
     volumes:
       - ${PGADMIN_DATA_LOCAL_PATH:-./pgadmin/data}:/var/lib/pgadmin
     networks:
