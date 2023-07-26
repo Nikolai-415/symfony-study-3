@@ -19,9 +19,10 @@
     </head>
     <body>
         <header>
-            <div class="text-center display-1">
-                АИС
+            <div class="text-center display-3">
+                АИС "Работа с резюме"
             </div>
+            <hr/>
             <ul class="nav justify-content-center nav-pills">
                 <li class="nav-item">
                     <a class="nav-link {% if app.request.attributes.get('_route') == 'index' %} active {% endif %}" aria-current="page" href="{{ path('index') }}">Главная</a>
@@ -47,11 +48,10 @@
                     </li>
                 {% endif %}
             </ul>
-            <div class="text-center">
-            </div>
         </header>
+        <hr/>
         <main>
-            <h1 class="text-center mt-2 mb-4">
+            <h1 class="text-center mt-2 mb-3">
                 {% block header %}Заголовок по умолчанию{% endblock %}
             </h1>
             {% if errors_texts ?? false %}
@@ -70,8 +70,9 @@
             {% endif %}
             <button class="btn btn-secondary btn-lg" onclick="scrollToTopFunction()" id="button_scroll_to_top">Наверх</button>
         </main>
-        <footer class="text-center mt-4" id="footer">
-            2021 г.
+        <hr/>
+        <footer class="text-center mt-2 mb-2" id="footer">
+            Nikolai2038 © 2021-{{ date().format('Y') }}
         </footer>
         {% block js_after_footer %}
             <script src="{{ asset('/js/scroll_to_top.js') }}"></script>
