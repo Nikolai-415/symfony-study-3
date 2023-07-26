@@ -9,7 +9,6 @@
 ## Используемые технологии
 
 - _**Docker-Compose v.3.9**_;
-- _**Docker-Compose v.3.9**_;
 - _**PHP v.8.1.21**_;
 - _**Symfony v.5.3.6**_;
 - _**Xdebug v.3.2.2**_;
