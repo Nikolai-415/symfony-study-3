@@ -1,3 +1,5 @@
+#!/bin/bash
+
 function n2038_sql_execute()
 {
     path=$1

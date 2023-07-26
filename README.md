@@ -6,10 +6,10 @@
 
 - _**Docker-Compose v.3.9**_;
 - _**Docker-Compose v.3.9**_;
-- _**PHP v.8.1.9**_;
+- _**PHP v.8.1.21**_;
 - _**Symfony v.5.3.6**_;
-- _**Xdebug v.3.1.5**_;
-- _**Composer v.2.3.10**_;
+- _**Xdebug v.3.2.2**_;
+- _**Composer v.2.5.8**_;
 - _**Nginx v.1.23.1**_;
 - _**PostgreSQL v.14.4**_;
 - _**pgAdmin4 v.6.12**_;

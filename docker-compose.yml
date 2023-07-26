@@ -36,6 +36,7 @@ services:
     hostname: study-symfony-attempt-3
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./public:/var/www/html/public
     networks:
       - inner-network
     depends_on:

@@ -1,10 +1,11 @@
-.git/
-.gitignore
+/.git
+/.gitignore
 
-docker-compose.yml
-commands.sh
-commands-dev.sh
-commands-prod.sh
+/Dockerfile
+/docker-compose.yml
+/commands.sh
+/commands-dev.sh
+/commands-prod.sh
 
-nginx/
-postgres/
+/nginx
+/postgres
